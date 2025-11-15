@@ -1,31 +1,31 @@
-import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
-import { CarouselBlock } from '@/blocks/Carousel/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
-import { ThreeItemGridBlock } from '@/blocks/ThreeItemGrid/Component'
 import { toKebabCase } from '@/utilities/toKebabCase'
 import React, { Fragment } from 'react'
 
 import type { Page } from '../payload-types'
+import PropertyListBlock from './PropertyListBlock/Component'
+import { ButtonBlockComponent } from './ButtonBlock/Component'
 
 const blockComponents = {
-  archive: ArchiveBlock,
   banner: BannerBlock,
-  carousel: CarouselBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
-  threeItemGrid: ThreeItemGridBlock,
+  'property-list': PropertyListBlock,
+  'button-block': ButtonBlockComponent,
 }
+type SearchParams = { [key: string]: string | string[] | undefined }
 
 export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
+  blocks: Page['layout'][0][],
+  searchParams: SearchParams,
 }> = (props) => {
-  const { blocks } = props
+  const { blocks, searchParams } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
@@ -43,7 +43,7 @@ export const RenderBlocks: React.FC<{
                 <div className="my-16" key={index}>
                   {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
                   {/* @ts-ignore - weird type mismatch here */}
-                  <Block id={toKebabCase(blockName!)} {...block} />
+                  <Block id={toKebabCase(blockName!)} {...block} searchParams={searchParams} />
                 </div>
               )
             }

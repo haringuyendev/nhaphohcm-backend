@@ -6,8 +6,7 @@ import { generateMeta } from '@/utilities/generateMeta'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
-import { homeStaticData } from '@/endpoints/seed/home-static'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import type { Page } from '@/payload-types'
 import { notFound } from 'next/navigation'
@@ -35,25 +34,23 @@ export async function generateStaticParams() {
 
   return params
 }
-
+type SearchParams = { [key: string]: string | string[] | undefined }
 type Args = {
-  params: Promise<{
-    slug?: string
-  }>
+  params: Promise<SearchParams>
 }
-
-export default async function Page({ params }: Args) {
-  const { slug = 'home' } = await params
-  const url = '/' + slug
-
-  let page = await queryPageBySlug({
-    slug,
+type PageProps = {
+  // params contains the dynamic route segments (e.g., { slug: 'about-us' })
+  params: Promise<{ slug: string | string[] | undefined }>;
+  // searchParams contains the query parameters (e.g., { page: '2' })
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+export default async function Page({ params, searchParams }: PageProps) {
+  const { slug } = await params
+  const urlSlug = Array.isArray(slug) ? slug.join('/') : slug || 'home'
+  const searchParamsValue = await searchParams
+  const page = await queryPageBySlug({
+    slug: urlSlug as string,
   })
-
-  // Remove this code once your website is seeded
-  if (!page && slug === 'home') {
-    page = homeStaticData() as Page
-  }
 
   if (!page) {
     return notFound()
@@ -62,9 +59,11 @@ export default async function Page({ params }: Args) {
   const { hero, layout } = page
 
   return (
-    <article className="pt-16 pb-24">
-      <RenderHero {...hero} />
-      <RenderBlocks blocks={layout} />
+    <article>
+      <Suspense fallback={<div>Loading...</div>}>
+        <RenderHero {...hero} />
+        <RenderBlocks blocks={layout} searchParams={searchParamsValue} />
+      </Suspense>
     </article>
   )
 }
@@ -73,7 +72,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug = 'home' } = await params
 
   const page = await queryPageBySlug({
-    slug,
+    slug: slug as string,
   })
 
   return generateMeta({ doc: page })

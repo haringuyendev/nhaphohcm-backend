@@ -1,11 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { Banner } from '@/blocks/Banner/config'
-import { Carousel } from '@/blocks/Carousel/config'
-import { ThreeItemGrid } from '@/blocks/ThreeItemGrid/config'
 import { generatePreviewPath } from '@/utilities/generatePreviewPath'
 import { adminOnly } from '@/access/adminOnly'
-import { Archive } from '@/blocks/ArchiveBlock/config'
 import { CallToAction } from '@/blocks/CallToAction/config'
 import { Content } from '@/blocks/Content/config'
 import { FormBlock } from '@/blocks/Form/config'
@@ -13,6 +10,7 @@ import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { hero } from '@/fields/hero'
 import { slugField } from 'payload'
 import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
+import { PropertyListBlock } from '@/blocks/PropertyListBlock/config'
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -91,11 +89,9 @@ export const Pages: CollectionConfig = {
                 CallToAction,
                 Content,
                 MediaBlock,
-                Archive,
-                Carousel,
-                ThreeItemGrid,
                 Banner,
                 FormBlock,
+                PropertyListBlock,
               ],
               required: true,
             },

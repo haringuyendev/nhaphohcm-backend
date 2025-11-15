@@ -3,24 +3,15 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { Plugin } from 'payload'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import { ecommercePlugin } from '@payloadcms/plugin-ecommerce'
-
-import { stripeAdapter } from '@payloadcms/plugin-ecommerce/payments/stripe'
-
-import { Page, Product } from '@/payload-types'
+import { Page } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
-import { ProductsCollection } from '@/collections/Products'
-import { adminOrCustomerOwner } from '@/access/adminOrCustomerOwner'
-import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
-import { adminOnly } from '@/access/adminOnly'
-import { adminOnlyFieldAccess } from '@/access/adminOnlyFieldAccess'
-import { customerOnlyFieldAccess } from '@/access/customerOnlyFieldAccess'
+import importExportPlugin from 'payload-plugin-import-export'
 
-const generateTitle: GenerateTitle<Product | Page> = ({ doc }) => {
+const generateTitle: GenerateTitle<Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Ecommerce Template` : 'Payload Ecommerce Template'
 }
 
-const generateURL: GenerateURL<Product | Page> = ({ doc }) => {
+const generateURL: GenerateURL<Page> = ({ doc }) => {
   const url = getServerSideURL()
 
   return doc?.slug ? `${url}/${doc.slug}` : url
@@ -65,28 +56,10 @@ export const plugins: Plugin[] = [
       },
     },
   }),
-  ecommercePlugin({
-    access: {
-      adminOnly,
-      adminOnlyFieldAccess,
-      adminOrCustomerOwner,
-      adminOrPublishedStatus,
-      customerOnlyFieldAccess,
-    },
-    customers: {
-      slug: 'users',
-    },
-    payments: {
-      paymentMethods: [
-        stripeAdapter({
-          secretKey: process.env.STRIPE_SECRET_KEY!,
-          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-          webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET!,
-        }),
-      ],
-    },
-    products: {
-      productsCollectionOverride: ProductsCollection,
-    },
+  importExportPlugin({
+    enabled: true,
+    excludeCollections: ['users'],
+    canImport: (user:any) => user.roles.includes("admin")
+    
   }),
 ]

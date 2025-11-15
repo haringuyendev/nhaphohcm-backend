@@ -9,7 +9,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import React from 'react'
+import React, { Suspense } from 'react'
 import './globals.css'
 
 /* const { SITE_NAME, TWITTER_CREATOR, TWITTER_SITE } = process.env
@@ -53,12 +53,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body>
         <Providers>
-          <AdminBar />
-          <LivePreviewListener />
+          {/* <AdminBar /> */}
+          {/* <LivePreviewListener /> */}
 
           <Header />
-          <main>{children}</main>
-          <Footer />
+            <main>{children}</main>
+          {/* <Footer /> */}
         </Providers>
       </body>
     </html>

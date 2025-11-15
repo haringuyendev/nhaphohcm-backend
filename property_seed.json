@@ -1,0 +1,8 @@
+[
+    { "label": "Căn hộ dịch vụ", "value": "apartment" },
+    { "label": "Nhà riêng", "value": "house" },
+    { "label": "Nhà mặt phố", "value": "shophouse" },
+    { "label": "Đất - Nhà nát", "value": "land" },
+    { "label": "Biệt thự", "value": "villa" },
+    { "label": "Tòa nhà văn phòng", "value": "office" }
+]

@@ -4,11 +4,12 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import React from 'react'
 
 import { ForgotPasswordForm } from '@/components/forms/ForgotPasswordForm'
+import { Suspense } from 'react'
 
 export default async function ForgotPasswordPage() {
   return (
     <div className="container py-16">
-      <ForgotPasswordForm />
+        <ForgotPasswordForm />
     </div>
   )
 }

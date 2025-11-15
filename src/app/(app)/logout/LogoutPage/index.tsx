@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/providers/Auth'
 import Link from 'next/link'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, Suspense, useEffect, useState } from 'react'
 
 export const LogoutPage: React.FC = (props) => {
   const { logout } = useAuth()

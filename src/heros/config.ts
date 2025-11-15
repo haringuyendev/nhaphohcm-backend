@@ -1,6 +1,8 @@
 import type { Field } from 'payload'
 
 import {
+  AlignFeature,
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
@@ -8,6 +10,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { linkGroup } from '@/fields/linkGroup'
+import { ButtonBlock } from '@/blocks/ButtonBlock/config'
 
 export const hero: Field = {
   name: 'hero',
@@ -46,8 +49,10 @@ export const hero: Field = {
           return [
             ...rootFeatures,
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+            BlocksFeature({ blocks: [ButtonBlock] }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
+            AlignFeature(),
           ]
         },
       }),

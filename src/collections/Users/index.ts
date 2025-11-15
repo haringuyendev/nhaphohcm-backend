@@ -14,7 +14,7 @@ export const Users: CollectionConfig = {
     admin: ({ req: { user } }) => checkRole(['admin'], user),
     create: publicAccess,
     delete: adminOnly,
-    read: adminOrSelf,
+    read: () => true,
     update: adminOrSelf,
   },
   admin: {
@@ -33,12 +33,13 @@ export const Users: CollectionConfig = {
     {
       name: 'roles',
       type: 'select',
+      required:true,
       access: {
         create: adminOnlyFieldAccess,
         read: adminOnlyFieldAccess,
         update: adminOnlyFieldAccess,
       },
-      defaultValue: ['customer'],
+      defaultValue: ['editor'],
       hasMany: true,
       hooks: {
         beforeChange: [ensureFirstUserIsAdmin],
@@ -49,40 +50,20 @@ export const Users: CollectionConfig = {
           value: 'admin',
         },
         {
-          label: 'customer',
-          value: 'customer',
+          label: 'editor',
+          value: 'editor',
         },
       ],
     },
     {
-      name: 'orders',
-      type: 'join',
-      collection: 'orders',
-      on: 'customer',
-      admin: {
-        allowCreate: false,
-        defaultColumns: ['id', 'createdAt', 'total', 'currency', 'items'],
-      },
+      name:'phone',
+      type:'text',
+      required:true,
     },
     {
-      name: 'cart',
-      type: 'join',
-      collection: 'carts',
-      on: 'customer',
-      admin: {
-        allowCreate: false,
-        defaultColumns: ['id', 'createdAt', 'total', 'currency', 'items'],
-      },
-    },
-    {
-      name: 'addresses',
-      type: 'join',
-      collection: 'addresses',
-      on: 'customer',
-      admin: {
-        allowCreate: false,
-        defaultColumns: ['id'],
-      },
-    },
+      name:'avatar',
+      type:'upload',
+      relationTo:'media',
+    }
   ],
 }

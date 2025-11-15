@@ -1,0 +1,978 @@
+[
+  {
+    "id": "03b242f9-54ab-47a9-a076-e124d2c81cac",
+    "code": 26905,
+    "name": "Phường 13",
+    "codename": "phuong_13",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "706d07ab-a42a-4139-adc1-e565b184d4d1",
+    "code": 26908,
+    "name": "Phường 11",
+    "codename": "phuong_11",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "12481fdf-56b3-4805-a576-800bad16d169",
+    "code": 26911,
+    "name": "Phường 27",
+    "codename": "phuong_27",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "903f19b8-18cc-4d2d-9665-47a6e98c0a5a",
+    "code": 26914,
+    "name": "Phường 26",
+    "codename": "phuong_26",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "aee4e1c2-78bd-403e-aba8-bd66730d7409",
+    "code": 26917,
+    "name": "Phường 12",
+    "codename": "phuong_12",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "4a836d59-cec0-4447-8fa5-a77031e56c92",
+    "code": 26920,
+    "name": "Phường 25",
+    "codename": "phuong_25",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "18477278-727d-4608-b39f-a1a7e9df873a",
+    "code": 26923,
+    "name": "Phường 5",
+    "codename": "phuong_5",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "cbb6a660-4f10-4752-9605-dc8670860923",
+    "code": 26926,
+    "name": "Phường 7",
+    "codename": "phuong_7",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "34f76cbe-676b-451a-9f09-5e6c8e48c8e7",
+    "code": 26935,
+    "name": "Phường 14",
+    "codename": "phuong_14",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "9742074d-6fb3-4d54-afef-48c102fc7604",
+    "code": 26941,
+    "name": "Phường 2",
+    "codename": "phuong_2",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "971bcd7f-b7d3-41e5-b365-7fdcbf2804de",
+    "code": 26944,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "dabe8c0b-57c4-4b3f-adf8-629a393ca68c",
+    "code": 26950,
+    "name": "Phường 17",
+    "codename": "phuong_17",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "c6be4a35-9969-4d99-bafa-5a9936e2bc20",
+    "code": 26956,
+    "name": "Phường 22",
+    "codename": "phuong_22",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "525e68fd-9dd3-4a41-98fe-cca9cc2cf2cd",
+    "code": 26959,
+    "name": "Phường 19",
+    "codename": "phuong_19",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "712d6475-f023-470f-a210-f8d4e7f68b28",
+    "code": 26962,
+    "name": "Phường 28",
+    "codename": "phuong_28",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d2"
+  },
+  {
+    "id": "5b5c5bae-0d0e-4fbd-a652-a4e649bd1aa7",
+    "code": 26734,
+    "name": "Phường Tân Định",
+    "codename": "phuong_tan_dinh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "d173750e-5c64-4c0d-b98a-b5daba50dc82",
+    "code": 26737,
+    "name": "Phường Đa Kao",
+    "codename": "phuong_da_kao",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "ee77b665-a176-4381-9c8b-2dab6c4f60d6",
+    "code": 26740,
+    "name": "Phường Bến Nghé",
+    "codename": "phuong_ben_nghe",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "aa0d2873-fc27-4cb9-8063-4f95ea55f212",
+    "code": 26743,
+    "name": "Phường Bến Thành",
+    "codename": "phuong_ben_thanh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "e8803ffe-4bb9-4b29-954a-15922f194983",
+    "code": 26746,
+    "name": "Phường Nguyễn Thái Bình",
+    "codename": "phuong_nguyen_thai_binh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "583f3e7a-da21-46f0-b5b6-6b56339f6eca",
+    "code": 26749,
+    "name": "Phường Phạm Ngũ Lão",
+    "codename": "phuong_pham_ngu_lao",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "c5e22830-3b51-456a-b5aa-1840b369e8b5",
+    "code": 26752,
+    "name": "Phường Cầu Ông Lãnh",
+    "codename": "phuong_cau_ong_lanh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "044a8c4c-2ff6-4d2b-b9b1-fd1eff244568",
+    "code": 26755,
+    "name": "Phường Cô Giang",
+    "codename": "phuong_co_giang",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "9ad091e8-58dd-4397-a35c-c972604455bb",
+    "code": 26758,
+    "name": "Phường Nguyễn Cư Trinh",
+    "codename": "phuong_nguyen_cu_trinh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "4333d1ba-6065-46b8-ad65-6eb64c962ecc",
+    "code": 26761,
+    "name": "Phường Cầu Kho",
+    "codename": "phuong_cau_kho",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "18135920-d1c6-4d43-937c-d66df5a2288d",
+    "code": 26872,
+    "name": "Phường 15",
+    "codename": "phuong_15",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "ae770596-bc17-474b-9e05-ad482c39e074",
+    "code": 26875,
+    "name": "Phường 17",
+    "codename": "phuong_17",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "45d79ec2-db70-4d59-ad0f-b29e2a560280",
+    "code": 26876,
+    "name": "Phường 6",
+    "codename": "phuong_6",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "b6ab3183-3eaa-422d-be89-29b7744654d9",
+    "code": 26878,
+    "name": "Phường 16",
+    "codename": "phuong_16",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "82d38a13-ecef-445f-889a-9a812616b211",
+    "code": 26881,
+    "name": "Phường 12",
+    "codename": "phuong_12",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "8afeb01f-5912-4429-ad0a-a9bf2066ff11",
+    "code": 26882,
+    "name": "Phường 14",
+    "codename": "phuong_14",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "a3a64f04-34d9-4143-9db2-f503b9960fc4",
+    "code": 26884,
+    "name": "Phường 10",
+    "codename": "phuong_10",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "b056db3a-3b36-40fd-9b09-3a8e5f1d6538",
+    "code": 26887,
+    "name": "Phường 5",
+    "codename": "phuong_5",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "55c377d1-1b51-44b3-8e2d-c6f4aeb71e3e",
+    "code": 26890,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "5d3a4530-c54b-43ba-841c-9b38a4e64670",
+    "code": 26898,
+    "name": "Phường 8",
+    "codename": "phuong_8",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "97651389-8e25-4222-bd77-79204e2b405b",
+    "code": 26899,
+    "name": "Phường 11",
+    "codename": "phuong_11",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "c8821d19-8d18-455e-830e-da95c553ec8e",
+    "code": 26902,
+    "name": "Phường 3",
+    "codename": "phuong_3",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19d4"
+  },
+  {
+    "id": "60b32a6d-e4d2-4559-871d-d2010ff0cd09",
+    "code": 26965,
+    "name": "Phường 2",
+    "codename": "phuong_2",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "4cd6ff65-8abd-4799-9ccd-826e149e4fe7",
+    "code": 26968,
+    "name": "Phường 4",
+    "codename": "phuong_4",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "868d4322-0452-44a1-8b46-376f4078d87d",
+    "code": 26971,
+    "name": "Phường 12",
+    "codename": "phuong_12",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "49258008-af6a-4e7d-b066-4a9377b566f1",
+    "code": 26974,
+    "name": "Phường 13",
+    "codename": "phuong_13",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "efec450b-1712-43d0-8bfb-480275f05a4d",
+    "code": 26977,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "9c8d1be5-710d-4c25-9f37-33fa9dce6bb9",
+    "code": 26980,
+    "name": "Phường 3",
+    "codename": "phuong_3",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "6c704273-670e-4e19-a0ec-d46e3d3d5338",
+    "code": 26983,
+    "name": "Phường 11",
+    "codename": "phuong_11",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "d3ef65f4-2087-4627-b8f8-b609488f604e",
+    "code": 26986,
+    "name": "Phường 7",
+    "codename": "phuong_7",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "9cdfeeb7-853b-4e86-b70b-850f0dc8305c",
+    "code": 26989,
+    "name": "Phường 5",
+    "codename": "phuong_5",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "ab3b2a1c-19b2-4bc7-84e9-b5389bc337ac",
+    "code": 26992,
+    "name": "Phường 10",
+    "codename": "phuong_10",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "df8af93e-ee9c-4875-9d41-11190f9d8cb2",
+    "code": 26995,
+    "name": "Phường 6",
+    "codename": "phuong_6",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "7d462509-99b1-43c3-942e-ac2a18939478",
+    "code": 26998,
+    "name": "Phường 8",
+    "codename": "phuong_8",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "37b492fe-f5e0-4f2e-8621-3c5c5389281c",
+    "code": 27001,
+    "name": "Phường 9",
+    "codename": "phuong_9",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "72571341-4375-42e7-ba57-e179cb875eb2",
+    "code": 27004,
+    "name": "Phường 14",
+    "codename": "phuong_14",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "b5721579-ea72-4ef7-bc24-ed45d3fbd6e1",
+    "code": 27007,
+    "name": "Phường 15",
+    "codename": "phuong_15",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ce"
+  },
+  {
+    "id": "a68f1f2f-e1c9-45cd-9b77-1bd85506e777",
+    "code": 27043,
+    "name": "Phường 4",
+    "codename": "phuong_4",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "f7a4faff-5b58-40b9-ad25-65d24fa31b9a",
+    "code": 27046,
+    "name": "Phường 5",
+    "codename": "phuong_5",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "cab055b4-5ece-4e89-9bbc-05604691c268",
+    "code": 27049,
+    "name": "Phường 9",
+    "codename": "phuong_9",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "cd9cdcdc-027d-4253-92fa-790fbc15e1a0",
+    "code": 27052,
+    "name": "Phường 7",
+    "codename": "phuong_7",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "6ccdf850-7ca7-48cd-8506-a4a5df60e659",
+    "code": 27058,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "c67f921c-b159-48a5-b8fa-e7c9e7a7fe98",
+    "code": 27061,
+    "name": "Phường 2",
+    "codename": "phuong_2",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "ec708a0f-188c-4118-919d-f81985060fba",
+    "code": 27064,
+    "name": "Phường 8",
+    "codename": "phuong_8",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "6d8aa858-8ac2-4175-b1db-e9578d300252",
+    "code": 27067,
+    "name": "Phường 15",
+    "codename": "phuong_15",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "6d91ca64-c97a-4b8a-ba34-6f884addd8fe",
+    "code": 27070,
+    "name": "Phường 10",
+    "codename": "phuong_10",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "5c12f0b8-9e19-4caa-b5f1-c76453371a30",
+    "code": 27073,
+    "name": "Phường 11",
+    "codename": "phuong_11",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "4649569f-296b-4009-b8ee-fe339cc2f511",
+    "code": 27085,
+    "name": "Phường 13",
+    "codename": "phuong_13",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19cc"
+  },
+  {
+    "id": "5a77f4f2-d514-48e1-bd87-d3e5b4cd2c31",
+    "code": 26794,
+    "name": "Phường Linh Xuân",
+    "codename": "phuong_linh_xuan",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "0e86e01e-3e13-4fb6-bc28-69f5bba634f0",
+    "code": 26797,
+    "name": "Phường Bình Chiểu",
+    "codename": "phuong_binh_chieu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "b87342e0-a90d-4314-9ab2-bd682f013107",
+    "code": 26800,
+    "name": "Phường Linh Trung",
+    "codename": "phuong_linh_trung",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "58141c99-d010-4a4d-99d4-14575fe3454a",
+    "code": 26803,
+    "name": "Phường Tam Bình",
+    "codename": "phuong_tam_binh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "bc5b790e-1061-4beb-824f-18a514bf8cab",
+    "code": 26806,
+    "name": "Phường Tam Phú",
+    "codename": "phuong_tam_phu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "b761c7c9-092f-4387-aecd-bd5f1e12ada9",
+    "code": 26809,
+    "name": "Phường Hiệp Bình Phước",
+    "codename": "phuong_hiep_binh_phuoc",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "55533db7-86d8-42c6-966e-6fa83b0b79ee",
+    "code": 26812,
+    "name": "Phường Hiệp Bình Chánh",
+    "codename": "phuong_hiep_binh_chanh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "d4324836-2489-46c8-8b92-d4eae51ccd0e",
+    "code": 26815,
+    "name": "Phường Linh Chiểu",
+    "codename": "phuong_linh_chieu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "ea23cc03-7577-48a1-a7a4-e9a84ff67af8",
+    "code": 26818,
+    "name": "Phường Linh Tây",
+    "codename": "phuong_linh_tay",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "d6cb2445-fe64-4e5a-b480-a19c1f4b83d8",
+    "code": 26821,
+    "name": "Phường Linh Đông",
+    "codename": "phuong_linh_dong",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "a3260040-8bcf-4c95-ad2f-340662ae3cec",
+    "code": 26824,
+    "name": "Phường Bình Thọ",
+    "codename": "phuong_binh_tho",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "96ea82f0-9d6e-45a6-aae7-456881bf1e2b",
+    "code": 26827,
+    "name": "Phường Trường Thọ",
+    "codename": "phuong_truong_tho",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "2ce56489-4c0f-42ea-adc4-170596981cef",
+    "code": 26830,
+    "name": "Phường Long Bình",
+    "codename": "phuong_long_binh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "418e1e68-b0de-4f68-b0a9-37a4e2be2248",
+    "code": 26833,
+    "name": "Phường Long Thạnh Mỹ",
+    "codename": "phuong_long_thanh_my",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "4ebcee2d-118a-4129-8eaf-6b664ee8f32e",
+    "code": 26836,
+    "name": "Phường Tân Phú",
+    "codename": "phuong_tan_phu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "d694b282-fb95-4e3b-a0cc-15989594de22",
+    "code": 26839,
+    "name": "Phường Hiệp Phú",
+    "codename": "phuong_hiep_phu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "10837c38-8d4e-4533-be92-b5cf4b13d020",
+    "code": 26842,
+    "name": "Phường Tăng Nhơn Phú A",
+    "codename": "phuong_tang_nhon_phu_a",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "f667a5cd-0c6c-4560-a2ac-997b723aefab",
+    "code": 26845,
+    "name": "Phường Tăng Nhơn Phú B",
+    "codename": "phuong_tang_nhon_phu_b",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "61f310d2-69f7-4c08-99e8-d14afaa48919",
+    "code": 26848,
+    "name": "Phường Phước Long B",
+    "codename": "phuong_phuoc_long_b",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "2c2980db-fda5-483e-8e49-d1836bc36aea",
+    "code": 26851,
+    "name": "Phường Phước Long A",
+    "codename": "phuong_phuoc_long_a",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "63ace78f-ef3e-44ed-a07d-2654d3c27bb3",
+    "code": 26854,
+    "name": "Phường Trường Thạnh",
+    "codename": "phuong_truong_thanh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "79b0a14a-5c01-48d8-a471-6abfa63cb7be",
+    "code": 26857,
+    "name": "Phường Long Phước",
+    "codename": "phuong_long_phuoc",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "121d46d7-3d15-4d42-9f59-f094efa61e87",
+    "code": 26860,
+    "name": "Phường Long Trường",
+    "codename": "phuong_long_truong",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "83e0130b-501b-4925-8ef3-425eaf2c73d8",
+    "code": 26863,
+    "name": "Phường Phước Bình",
+    "codename": "phuong_phuoc_binh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "76148c45-602a-4241-be89-3270dcb588a4",
+    "code": 26866,
+    "name": "Phường Phú Hữu",
+    "codename": "phuong_phu_huu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "4299130b-5831-4f63-893d-dbcea27acb3c",
+    "code": 27088,
+    "name": "Phường Thảo Điền",
+    "codename": "phuong_thao_dien",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "0f50cf61-773f-40b9-b53a-37e2fb2fb98b",
+    "code": 27091,
+    "name": "Phường An Phú",
+    "codename": "phuong_an_phu",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "b4cb23d9-7df6-40d3-9024-99859c1e19e1",
+    "code": 27094,
+    "name": "Phường An Khánh",
+    "codename": "phuong_an_khanh",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "cee10a4b-1975-4546-8ff0-e25927073f4a",
+    "code": 27097,
+    "name": "Phường Bình Trưng Đông",
+    "codename": "phuong_binh_trung_dong",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "072d8459-c42b-4ca1-b266-4bef21355570",
+    "code": 27100,
+    "name": "Phường Bình Trưng Tây",
+    "codename": "phuong_binh_trung_tay",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "3f7f4687-8689-4e72-8dd7-154760173761",
+    "code": 27109,
+    "name": "Phường Cát Lái",
+    "codename": "phuong_cat_lai",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "9a00aa01-078f-4957-bc99-bd93edf7a4d1",
+    "code": 27112,
+    "name": "Phường Thạnh Mỹ Lợi",
+    "codename": "phuong_thanh_my_loi",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "a7282d34-d813-4f83-b042-9a0aec7d8de8",
+    "code": 27115,
+    "name": "Phường An Lợi Đông",
+    "codename": "phuong_an_loi_dong",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "4c98fbf6-680a-4cff-8d65-d7938e6cab0c",
+    "code": 27118,
+    "name": "Phường Thủ Thiêm",
+    "codename": "phuong_thu_thiem",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c8"
+  },
+  {
+    "id": "63676055-5b10-4810-ac0e-31ea1da9b76f",
+    "code": 27127,
+    "name": "Phường 14",
+    "codename": "phuong_14",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "9302c3a3-d820-410c-839a-bc2e2948a8ce",
+    "code": 27130,
+    "name": "Phường 12",
+    "codename": "phuong_12",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "c7bf2d16-f894-4dfb-a831-45a04385562b",
+    "code": 27133,
+    "name": "Phường 11",
+    "codename": "phuong_11",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "0b3edcb1-1f91-4a06-b588-bac6c2d8788e",
+    "code": 27139,
+    "name": "Phường Võ Thị Sáu",
+    "codename": "phuong_vo_thi_sau",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "6c486551-8c03-4840-8fd2-5095d3a50c3e",
+    "code": 27142,
+    "name": "Phường 9",
+    "codename": "phuong_9",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "4ae68026-8b06-4c1d-9201-b28a3f842ee4",
+    "code": 27148,
+    "name": "Phường 4",
+    "codename": "phuong_4",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "185572a3-56c4-4a01-8db3-47fb63b03c3c",
+    "code": 27151,
+    "name": "Phường 5",
+    "codename": "phuong_5",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "5f729340-afbc-40aa-b436-ec36487e5238",
+    "code": 27154,
+    "name": "Phường 3",
+    "codename": "phuong_3",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "17898dda-9f55-49d7-a329-3fce76710945",
+    "code": 27157,
+    "name": "Phường 2",
+    "codename": "phuong_2",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "b3b801fd-11ae-4d8b-ba15-8731d158c7e5",
+    "code": 27160,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19ca"
+  },
+  {
+    "id": "02725c80-7ec1-4a3c-bf56-c901e6d8adf1",
+    "code": 27163,
+    "name": "Phường 15",
+    "codename": "phuong_15",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "c647b449-1990-4cc7-8240-41d7b0fb6254",
+    "code": 27166,
+    "name": "Phường 13",
+    "codename": "phuong_13",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "1cdd4896-c2a5-4cbb-a193-e3cb3d679112",
+    "code": 27169,
+    "name": "Phường 14",
+    "codename": "phuong_14",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "6d416100-63c7-4ac1-abf3-c12efa83658e",
+    "code": 27172,
+    "name": "Phường 12",
+    "codename": "phuong_12",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "91eef0bd-e338-401e-9648-cb42c61ca0fa",
+    "code": 27178,
+    "name": "Phường 10",
+    "codename": "phuong_10",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "62cfbce7-2dc8-4915-817f-ecf433d7e61b",
+    "code": 27181,
+    "name": "Phường 9",
+    "codename": "phuong_9",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "dd157bf6-959d-4bee-811a-9576204d25ec",
+    "code": 27184,
+    "name": "Phường 1",
+    "codename": "phuong_1",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "2c1f14f1-ae20-4b6b-8763-ad59fa953ec2",
+    "code": 27187,
+    "name": "Phường 8",
+    "codename": "phuong_8",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "f7abdd3f-4f62-4090-9fc0-dabf1875d7ca",
+    "code": 27190,
+    "name": "Phường 2",
+    "codename": "phuong_2",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "44dc48b3-2df9-454e-a6e1-b13b7f9a65de",
+    "code": 27193,
+    "name": "Phường 4",
+    "codename": "phuong_4",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "a32d83b2-fb3b-4e79-a939-3811cd02e98c",
+    "code": 27202,
+    "name": "Phường 6",
+    "codename": "phuong_6",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "cb8fea77-e09f-4c63-a2f8-3e7e0184d36d",
+    "code": 26963,
+    "name": "Phường 3",
+    "codename": "phuong_3",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "000916fc-ae4a-4984-aad4-97101ee187e9",
+    "code": 26966,
+    "name": "Phường 6",
+    "codename": "phuong_6",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "5118009b-9453-49c0-a50a-508ef447d5d7",
+    "code": 26969,
+    "name": "Phường 15",
+    "codename": "phuong_15",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  },
+  {
+    "id": "9f2ac15f-1ae8-4525-9f6e-00354692544f",
+    "code": 26972,
+    "name": "Phường 24",
+    "codename": "phuong_24",
+    "division_type": "phuong",
+    "district": "6914367179e3036db82b19c6"
+  }
+]

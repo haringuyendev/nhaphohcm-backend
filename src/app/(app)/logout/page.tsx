@@ -1,23 +1,22 @@
+// app/logout/page.tsx
 import type { Metadata } from 'next'
-
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import React from 'react'
-
+import { Suspense } from 'react'
 import { LogoutPage } from './LogoutPage'
 
-export default async function Logout() {
+export default function Logout() {
   return (
     <div className="container max-w-lg my-16">
-      <LogoutPage />
+        <LogoutPage />
     </div>
   )
 }
 
 export const metadata: Metadata = {
-  description: 'You have been logged out.',
+  title: 'Đăng xuất',
+  description: 'Bạn đã được đăng xuất thành công.',
   openGraph: mergeOpenGraph({
-    title: 'Logout',
+    title: 'Đăng xuất',
     url: '/logout',
   }),
-  title: 'Logout',
 }

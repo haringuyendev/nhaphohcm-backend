@@ -1,6 +1,7 @@
 import type { Field } from 'payload'
 
 import {
+  BlocksFeature,
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
@@ -8,6 +9,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { linkGroup } from './linkGroup'
+import { ButtonBlock } from '@/blocks/ButtonBlock/config'
 
 export const hero: Field = {
   name: 'hero',
@@ -48,6 +50,7 @@ export const hero: Field = {
             HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
+            BlocksFeature({ blocks: [ButtonBlock] }),
           ]
         },
       }),
@@ -60,13 +63,22 @@ export const hero: Field = {
     }),
     {
       name: 'media',
-      type: 'upload',
+      type: 'array',
       admin: {
         condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
       },
-      relationTo: 'media',
-      required: true,
-    },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        }
+      ],
+      label: 'Media Images',
+      minRows: 1,
+      maxRows: 5,
+    }
   ],
   label: false,
 }

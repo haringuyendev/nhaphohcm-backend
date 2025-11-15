@@ -24,7 +24,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richTex
           </ul>
         )}
       </div>
-      <div className="container ">
+      {/* <div className="container ">
         {media && typeof media === 'object' && (
           <div>
             <Media
@@ -40,7 +40,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richTex
             )}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   )
 }
