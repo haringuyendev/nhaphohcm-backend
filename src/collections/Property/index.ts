@@ -17,8 +17,23 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 
-const updateWardPropertyCount = async ({ req, ward_id }: { req: any; ward_id: string }) => {
+// src/collections/Property/hooks/updateWardCount.ts
+const updateWardPropertyCount = async ({
+  req,
+  ward,
+}: {
+  req: any
+  ward: { id: string } | null | undefined
+}) => {
+  // SIÊU QUAN TRỌNG: KIỂM TRA NULL/UNDEFINED TRƯỚC KHI DÙNG
+  if (!ward || !ward.id) {
+    console.log('[updateWardPropertyCount] Ward không hợp lệ hoặc bị xóa → bỏ qua')
+    return
+  }
+
   const payload = req.payload
+  const ward_id = ward.id
+
   try {
     const count = await payload.count({
       collection: 'properties',
@@ -27,14 +42,16 @@ const updateWardPropertyCount = async ({ req, ward_id }: { req: any; ward_id: st
         is_published: { equals: true },
       },
     })
-    console.log(count)
+
     await payload.update({
       collection: 'wards',
-      where: { id: { equals: ward_id } },
+      id: ward_id,
       data: { propertyCount: count.totalDocs },
     })
+
+    console.log(`[updateWardPropertyCount] Ward ${ward_id} → ${count.totalDocs} tin`)
   } catch (error) {
-    console.error(`[updateWardPropertyCount] Ward ${ward_id}:`, error)
+    console.error(`[updateWardPropertyCount] Lỗi cập nhật ward ${ward_id}:`, error)
   }
 }
 export const Properties: CollectionConfig = {
@@ -164,9 +181,18 @@ export const Properties: CollectionConfig = {
                 afterChange: [
                   async ({ value, previousValue, req }) => {
                     try {
-                      console.log(value, previousValue)
-                      await updateWardPropertyCount({ req, ward_id: value })
-                      await updateWardPropertyCount({ req, ward_id: previousValue })
+                      // Cập nhật cho ward mới (nếu có)
+                      if (value) {
+                        await updateWardPropertyCount({ req, ward: value as { id: string } })
+                      }
+
+                      // Cập nhật cho ward cũ (nếu bị xóa hoặc thay đổi)
+                      if (previousValue) {
+                        await updateWardPropertyCount({
+                          req,
+                          ward: previousValue as { id: string },
+                        })
+                      }
                     } catch (error) {
                       console.error('[Property ward afterChange] Error:', error)
                     }

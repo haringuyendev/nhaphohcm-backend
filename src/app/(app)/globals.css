@@ -26,6 +26,7 @@
 @theme {
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), sans-serif;
+  --font-be-vietnam: var(--font-be-vietnam), sans-serif;
 }
 
 @utility container {
@@ -62,6 +63,7 @@
     --border: hsl(220 13% 91%);
     --input: hsl(220 13% 91%);
     --ring: hsl(180 70% 42%);
+    --label: hsl(219, 100%, 13%);
 
     --radius: 0.75rem;
     
@@ -115,6 +117,7 @@
     --destructive-foreground: hsl(0 0% 100%);
 
     --border: hsl(220 18% 22%);
+    --label: hsl(219, 100%, 13%);
     --input: hsl(220 18% 22%);
     --ring: hsl(180 70% 42%);
     --sidebar-background: hsl(240 5.9% 10%);
@@ -184,7 +187,7 @@
 }
 html {
   opacity: 0;
-  @apply font-sans;
+  @apply font-be-vietnam;
 }
 
 html[data-theme='dark'],

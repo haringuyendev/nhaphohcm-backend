@@ -11,7 +11,15 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import React, { Suspense } from 'react'
 import './globals.css'
+import { Be_Vietnam_Pro } from "next/font/google"
+import { cn } from '@/lib/utils'
 
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-be-vietnam',
+  display: 'swap',
+})
 /* const { SITE_NAME, TWITTER_CREATOR, TWITTER_SITE } = process.env
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
   ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
@@ -42,7 +50,7 @@ const twitterSite = TWITTER_SITE ? ensureStartsWith(TWITTER_SITE, 'https://') : 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
-      className={[GeistSans.variable, GeistMono.variable].filter(Boolean).join(' ')}
+      className={[cn(beVietnam.className, beVietnam.variable, GeistSans.variable, GeistMono.variable)].filter(Boolean).join(' ')}
       lang="en"
       suppressHydrationWarning
     >

@@ -3,6 +3,9 @@
 import { getPayload, Where } from 'payload'
 import configPromise from '@payload-config'
 import { revalidatePath } from 'next/cache'
+import z from 'zod'
+import { uploadMedia } from './media'
+import { Media } from '@/payload-types'
 
 const toArray = (value: string | string[] | undefined): string[] => {
   if (Array.isArray(value)) return value
@@ -25,6 +28,7 @@ export async function getProperty_types() {
       select: { label: true, value: true },
       sort: 'label',
     })
+    // console.log("property_types", property_types)
     return property_types.docs
   } catch (error) {
     console.error('Error fetching property_types:', error)
@@ -106,11 +110,14 @@ export async function getProperties(params: any) {
   return properties
 }
 
+// endpoints/common/properties.ts
 export async function getPropertiesByStatus(params: {
   status?: 'published' | 'unpublished' | 'deleted' | 'expired' | 'expiring'
   page?: string
   limit?: string
-}){
+  user?: any
+  search?: string
+}) {
   const payload = await getPayload({ config: configPromise })
 
   const limit = [10, 20, 50].includes(Number(params.limit)) ? Number(params.limit) : 10
@@ -119,142 +126,78 @@ export async function getPropertiesByStatus(params: {
   const now = new Date()
   const nowISO = now.toISOString()
   const fiveDaysLater = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
-  // === WHERE THEO STATUS ===
-  let where: any = {}
+  const seller = params.user.id
 
-  switch (params.status) {
-    case 'published':
-      where = {
-        and: [
+  // === XÂY DỰNG WHERE ===
+  let where: any = { seller: { equals: seller } }
+
+  // 1. Lọc theo status
+  if (params.status) {
+    const statusConditions: any[] = []
+
+    switch (params.status) {
+      case 'published':
+        statusConditions.push(
           { is_published: { equals: true } },
           { is_hidden: { equals: false } },
           {
-            or: [
-              { expire_at: { exists: false } },
-              { expire_at: { greater_than_equal: nowISO } },
-            ],
+            or: [{ expire_at: { exists: false } }, { expire_at: { greater_than_equal: nowISO } }],
           },
-        ],
-      }
-      break
-
-    case 'unpublished':
-      where = {
-        and: [
-          { is_published: { equals: false } },
-          { is_hidden: { equals: false } },
-        ],
-      }
-      break
-
-    case 'deleted':
-      where = { is_hidden: { equals: true } }
-      break
-
-    case 'expired':
-      where = { expire_at: { less_than: nowISO } }
-      break
-
-    case 'expiring':
-      where = {
-        and: [
+        )
+        break
+      case 'unpublished':
+        statusConditions.push({ is_published: { equals: false } }, { is_hidden: { equals: false } })
+        break
+      case 'deleted':
+        statusConditions.push({ is_hidden: { equals: true } })
+        break
+      case 'expired':
+        statusConditions.push({ expire_at: { less_than: nowISO } })
+        break
+      case 'expiring':
+        statusConditions.push(
           { expire_at: { greater_than_equal: nowISO } },
           { expire_at: { less_than_equal: fiveDaysLater } },
-        ],
-      }
-      break
+        )
+        break
+    }
 
-    default:
+    if (statusConditions.length > 0) {
       where = {
-        and: [
-          { is_published: { equals: true } },
-          { is_hidden: { equals: false } },
-          {
-            or: [
-              { expire_at: { exists: false } },
-              { expire_at: { greater_than_equal: nowISO } },
-            ],
-          },
-        ],
+        and: [where, ...statusConditions],
       }
+    }
   }
 
-  // === LẤY DANH SÁCH + POPULATE ===
+  // 2. Thêm SEARCH nếu có
+  if (params.search?.trim()) {
+    const searchTerm = params.search.trim()
+
+    const searchConditions = {
+      or: [
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { address: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } }, // nếu có
+      ],
+    }
+
+    where = where.and
+      ? { and: [where, searchConditions] }
+      : { and: [{ seller: { equals: seller } }, searchConditions] }
+  }
+
+  // === QUERY ===
   const result = await payload.find({
     collection: 'properties',
     where,
     page,
     limit,
     sort: ['-is_vip', '-bumped_at', '-created_at'],
-    depth: 2, // đủ để populate: province, district, ward, seller, images.image
+    depth: 2,
   })
 
-  // === TÍNH STATS (song song) ===
-  const [
-    totalCount,
-    publishedCount,
-    unpublishedCount,
-    deletedCount,
-    expiredCount,
-    expiringCount,
-    bumpedTodayCount,
-    neverBumpedCount,
-  ] = await Promise.all([
-    payload.find({ collection: 'properties', limit: 0, where: {} }).then(r => r.totalDocs),
-    payload.find({
-      collection: 'properties',
-      limit: 0,
-      where: {
-        and: [
-          { is_published: { equals: true } },
-          { is_hidden: { equals: false } },
-          { or: [{ expire_at: { exists: false } }, { expire_at: { greater_than_equal: nowISO } }] },
-        ],
-      },
-    }).then(r => r.totalDocs),
-    payload.find({
-      collection: 'properties',
-      limit: 0,
-      where: { and: [{ is_published: { equals: false } }, { is_hidden: { equals: false } }] },
-    }).then(r => r.totalDocs),
-    payload.find({ collection: 'properties', limit: 0, where: { is_hidden: { equals: true } } }).then(r => r.totalDocs),
-    payload.find({ collection: 'properties', limit: 0, where: { expire_at: { less_than: nowISO } } }).then(r => r.totalDocs),
-    payload.find({
-      collection: 'properties',
-      limit: 0,
-      where: {
-        and: [
-          { expire_at: { greater_than_equal: nowISO } },
-          { expire_at: { less_than_equal: fiveDaysLater } },
-        ],
-      },
-    }).then(r => r.totalDocs),
-    payload.find({
-      collection: 'properties',
-      limit: 0,
-      where: { bumped_at: { greater_than_equal: yesterday } },
-    }).then(r => r.totalDocs),
-    payload.find({
-      collection: 'properties',
-      limit: 0,
-      where: { bumped_at: { equals: null } },
-    }).then(r => r.totalDocs),
-  ])
-
-  const stats = {
-    total: totalCount,
-    published: publishedCount,
-    unpublished: unpublishedCount,
-    deleted: deletedCount,
-    expired: expiredCount,
-    expiring: expiringCount,
-    bumped_today: bumpedTodayCount,
-    never_bumped: neverBumpedCount,
-  }
-
-  // === FORMAT LIST (giống Supabase) ===
+  // === MAP DATA ===
   const list = result.docs.map((p: any) => ({
     id: p.id,
     title: p.title,
@@ -271,24 +214,10 @@ export async function getPropertiesByStatus(params: {
       },
     })),
     type: p.type || { value: '', label: '' },
-    province: {
-      id: p.province?.id,
-      name: p.province?.name,
-      code: p.province?.code,
-    },
-    district: {
-      id: p.district?.id,
-      name: p.district?.name,
-      code: p.district?.code,
-    },
-    ward: p.ward
-      ? {
-          id: p.ward?.id,
-          name: p.ward?.name,
-          code: p.ward?.code,
-        }
-      : null,
-    is_vip: p.is_vip || false,
+    province: { id: p.province?.id, name: p.province?.name },
+    district: { id: p.district?.id, name: p.district?.name },
+    ward: p.ward ? { id: p.ward?.id, name: p.ward?.name } : null,
+    is_vip: !!p.is_vip,
     bumped_at: p.bumped_at,
     created_at: p.created_at,
     expire_at: p.expire_at,
@@ -296,15 +225,13 @@ export async function getPropertiesByStatus(params: {
       id: p.seller?.id,
       name: p.seller?.name,
       phone: p.seller?.phone,
-      avatar: p.seller?.avatar,
     },
-    is_published: p.is_published || false,
-    is_hidden: p.is_hidden || false,
+    is_published: !!p.is_published,
+    is_hidden: !!p.is_hidden,
   }))
 
   return {
     list,
-    stats,
     pagination: {
       total: result.totalDocs,
       limit: result.limit,
@@ -315,6 +242,85 @@ export async function getPropertiesByStatus(params: {
       prevPage: result.prevPage,
       nextPage: result.nextPage,
     },
+  }
+}
+
+export async function getPropertyStats(user: any) {
+  const payload = await getPayload({ config: configPromise })
+
+  const now = new Date()
+  const nowISO = now.toISOString()
+  const fiveDaysLater = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+
+  // === TỐI ƯU: DÙNG 1 LẦN payload.count() + aggregation ===
+  const [total, published, unpublished, deleted, expired, expiring, bumpedToday, neverBumped] =
+    await Promise.all([
+      payload.count({ collection: 'properties', where: { seller: { equals: user.id } } }),
+      payload.count({
+        collection: 'properties',
+        where: {
+          and: [
+            { seller: { equals: user.id } },
+            { is_published: { equals: true } },
+            { is_hidden: { equals: false } },
+            {
+              or: [
+                { expire_at: { exists: false } },
+                { expire_at: { greater_than_equal: nowISO } },
+                { seller: { equals: user.id } },
+              ],
+            },
+          ],
+        },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: {
+          and: [
+            { seller: { equals: user.id } },
+            { is_published: { equals: false } },
+            { is_hidden: { equals: false } },
+          ],
+        },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: { seller: { equals: user.id }, is_hidden: { equals: true } },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: { seller: { equals: user.id }, expire_at: { less_than: nowISO } },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: {
+          and: [
+            { seller: { equals: user.id } },
+            { expire_at: { greater_than_equal: nowISO } },
+            { expire_at: { less_than_equal: fiveDaysLater } },
+          ],
+        },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: { seller: { equals: user.id }, bumped_at: { greater_than_equal: yesterday } },
+      }),
+      payload.count({
+        collection: 'properties',
+        where: { seller: { equals: user.id }, bumped_at: { exists: false } },
+      }),
+    ])
+
+  return {
+    total: total.totalDocs,
+    published: published.totalDocs,
+    unpublished: unpublished.totalDocs,
+    deleted: deleted.totalDocs,
+    expired: expired.totalDocs,
+    expiring: expiring.totalDocs,
+    bumped_today: bumpedToday.totalDocs,
+    never_bumped: neverBumped.totalDocs,
   }
 }
 
@@ -380,7 +386,9 @@ export async function restoreProperty(id: string) {
 // ==================================================================
 // 4. UPLOAD ẢNH → trả về URL
 // ==================================================================
-export async function uploadImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+export async function uploadImage(
+  file: File,
+): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
     // Làm sạch tên file
     const sanitize = (name: string) =>
@@ -487,5 +495,201 @@ export async function updateVipStatus(id: string, days: number, isVip: boolean) 
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message || 'Lỗi khi cập nhật VIP' }
+  }
+}
+
+// ==================== 1. GET PROPERTY BY ID ====================
+export async function getPropertyById(id: string) {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    const property = await payload.findByID({
+      collection: 'properties',
+      id,
+      select: {
+        title: true,
+        description: true,
+        province: true,
+        district: true,
+        ward: true,
+        address: true,
+        type: true,
+        area: true,
+        price: true,
+        images: true,
+      },
+    })
+
+    if (!property) {
+      return { success: false, error: 'Không tìm thấy tin đăng' }
+    }
+
+    return { success: true, data: property }
+  } catch (error: any) {
+    console.error('Get property error:', error)
+    return { success: false, error: 'Lỗi khi lấy dữ liệu tin đăng' }
+  }
+}
+
+// ==================== 2. CREATE PROPERTY ====================
+// src/endpoints/common/properties.ts
+
+export const createProperty = async (data: any) => {
+  const payload = await getPayload({ config: configPromise })
+
+  try {
+    // 1. Chuẩn hóa dữ liệu đầu vào
+    const rawData = data instanceof FormData ? Object.fromEntries(data.entries()) : data
+
+    // 2. QUAN TRỌNG: Giữ nguyên mảng images từ client gửi lên
+    // Frontend hiện tại gửi đúng định dạng Payload cần:
+    // [{ image: { id: "xxx" }, id: "row_abc" }, ...]
+    let imagesPayload: any[] = []
+
+    if (rawData.images) {
+      if (typeof rawData.images === 'string') {
+        try {
+          imagesPayload = JSON.parse(rawData.images)
+        } catch {
+          // nếu parse lỗi → coi như không có ảnh
+        }
+      } else if (Array.isArray(rawData.images)) {
+        imagesPayload = rawData.images
+      }
+    }
+
+    // 3. Tạo slug
+    const slug = (rawData.title as string)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+
+    // 4. Parse description
+    let descriptionJson
+    try {
+      descriptionJson = typeof rawData.description === 'string'
+        ? JSON.parse(rawData.description)
+        : rawData.description
+    } catch (e) {
+      return { success: false, error: 'Mô tả không hợp lệ' }
+    }
+
+    // 5. Dữ liệu gửi lên Payload
+    const propertyData = {
+      title: rawData.title as string,
+      slug,
+      seller: rawData.seller as string,
+      description: descriptionJson,
+      type: rawData.type,
+      price: Number(rawData.price),
+      area: Number(rawData.area),
+      province: rawData.province,
+      district: rawData.district,
+      ward: rawData.ward || undefined,
+      address: rawData.address as string,
+      images: imagesPayload, // ĐÚNG ĐỊNH DẠNG: có id + image.id → giữ thứ tự + liên kết
+    }
+
+    console.log('createProperty → payloadData.images:', imagesPayload)
+
+    // 6. Tạo tin
+    const property = await payload.create({
+      collection: 'properties',
+      data: propertyData,
+      draft: false,
+    })
+
+    // Revalidate
+    revalidatePath('/admin')
+    revalidatePath('/')
+
+    return { success: true, data: property }
+
+  } catch (err: any) {
+    console.error('Create property error:', err)
+    return {
+      success: false,
+      error: err?.data?.errors?.[0]?.message || err.message || 'Tạo tin thất bại'
+    }
+  }
+}
+
+// ==================== 3. UPDATE PROPERTY (HOÀN HẢO 100%) ====================
+export async function updateProperty(id: string, formData: any) {
+  console.log(id)
+  const payload = await getPayload({ config: configPromise })
+  try {
+    // 1. Đảm bảo luôn là plain object
+    const rawData = formData instanceof FormData ? Object.fromEntries(formData.entries()) : formData
+
+    // 2. XỬ LÝ ẢNH – BÂY GIỜ LÀ MẢNG OBJECT { id?: string, mediaId: string }
+    const imagesFromClient = Array.isArray(rawData.images) ? rawData.images : []
+
+    if (imagesFromClient.length === 0) {
+      return { success: false, error: 'Vui lòng tải lên ít nhất 1 ảnh' }
+    }
+
+    console.log('imagesFromClient từ client:', imagesFromClient)
+
+    // 3. Tạo slug
+    const slug = rawData.title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+
+    // 4. Parse description
+    let descriptionJson: any
+    try {
+      descriptionJson =
+        typeof rawData.description === 'string'
+          ? JSON.parse(rawData.description)
+          : rawData.description
+    } catch (e) {
+      return { success: false, error: 'Mô tả không hợp lệ' }
+    }
+    // 6. CHÌA KHÓA VÀNG: TẠO MẢNG ẢNH ĐÚNG ĐỊNH DẠNG PAYLOAD
+    const finalImages = imagesFromClient.map((item: any) => {
+      const result: any = {
+        image: item.image || item.mediaId,
+      }
+      if (item.id && typeof item.id === 'string' && item.id.length > 10) {
+        result.id = item.id
+      }
+      return result
+    })
+    console.log('rawData', rawData)
+    // 7. GỌI PAYLOAD UPDATE
+    const res = await payload.update({
+      collection: 'properties',
+      id:id,
+      data: {
+        title: rawData.title,
+        description: descriptionJson,
+        type: rawData.type,
+        price: Number(rawData.price),
+        area: Number(rawData.area),
+        province: rawData.province,
+        district: rawData.district,
+        ward: rawData.ward || undefined,
+        address: rawData.address,
+        images: finalImages,
+      },
+    })
+    console.log('res', res)
+    // 8. Revalidate
+    revalidatePath('/admin')
+    revalidatePath(`/tin-dang/${id}`)
+    revalidatePath(`/tin-dang/${slug}`)
+
+    return { success: true, message: 'Cập nhật tin thành công!' }
+  } catch (error: any) {
+    console.error('Update property error:', error)
+    return { success: false, error: error.message || 'Cập nhật thất bại' }
   }
 }

@@ -24,6 +24,28 @@ export const Users: CollectionConfig = {
   },
   auth: {
     tokenExpiration: 1209600,
+    forgotPassword: {
+      generateEmailHTML: (args) => {
+        const token = args?.token
+        const user = args?.user
+        // Use the token provided to allow your user to reset their password
+        const resetPasswordURL = `${process.env.NEXT_PUBLIC_SERVER_URL}/reset-password?token=${token}`
+
+        return `
+          <!doctype html>
+          <html>
+            <body>
+              <h1>Đây là email đặt lại mật khẩu từ Nhaphohcm.com.vn!</h1>
+              <p>Hello, ${user.email}!</p>
+              <p>Click below to reset your password.</p>
+              <p>
+                <a href="${resetPasswordURL}">${resetPasswordURL}</a>
+              </p>
+            </body>
+          </html>
+        `
+      },
+    },
   },
   fields: [
     {

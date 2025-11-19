@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
@@ -10,6 +11,7 @@ import React, { Suspense } from 'react'
 
 import type { Page } from '@/payload-types'
 import { notFound } from 'next/navigation'
+import Loading from '@/components/LoadingSpinner/Loading'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -60,7 +62,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   return (
     <article>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <RenderHero {...hero} />
         <RenderBlocks blocks={layout} searchParams={searchParamsValue} />
       </Suspense>

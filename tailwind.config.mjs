@@ -49,6 +49,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        label: 'hsl(var(--label))',
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
@@ -105,6 +106,7 @@ export default {
       fontFamily: {
         mono: ['var(--font-geist-mono)'],
         sans: ['var(--font-geist-sans)'],
+        beVietnam: ['var(--font-be-vietnam)'],
       },
       keyframes: {
         fadeIn: {

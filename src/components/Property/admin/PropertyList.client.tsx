@@ -1,0 +1,80 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+import {
+  bumpProperty,
+  restoreProperty,
+  softDeleteProperty,
+  togglePublish,
+  updateVipStatus,
+} from '@/endpoints/common/properties'
+import { Upload, Download, Trash2, Undo2, Diamond, Plus } from 'lucide-react'
+import Link from 'next/link'
+import FilterButtons from './PropertyFiltersButton.server'
+
+interface Property {
+  id: string
+  is_hidden?: boolean
+  is_published?: boolean
+  is_vip?: boolean
+  expire_at?: string
+  last_bumped_at?: string
+  vip_activated_at?: string
+}
+
+interface PropertyListClientProps {
+  children: React.ReactNode
+  currentStatus?: string
+}
+
+export default function PropertyListClient({ children, currentStatus }: PropertyListClientProps) {
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
+  const stats = {
+    total: 100,
+    published: 40,
+    unpublished: 30,
+    deleted: 15,
+    expired: 10,
+    expiring: 5,
+  } // ← Sẽ được thay bằng dữ liệu thật từ server
+
+  const filters = [
+    { key: undefined, label: 'Tất cả', count: stats.total },
+    { key: 'published', label: 'Đang hiển thị', count: stats.published },
+    { key: 'unpublished', label: 'Đã hạ', count: stats.unpublished },
+    { key: 'deleted', label: 'Đã xóa', count: stats.deleted },
+    { key: 'expired', label: 'Hết hạn', count: stats.expired },
+    { key: 'expiring', label: 'Sắp hết hạn', count: stats.expiring },
+  ]
+
+  const refetch = () => {
+    startTransition(() => router.refresh())
+  }
+
+  const handleAction = async (
+    action: () => Promise<any>,
+    successMsg: string,
+    errorMsg = 'Lỗi'
+  ) => {
+    const res = await action()
+    if (res.success) {
+      toast.success(successMsg)
+      refetch()
+    } else {
+      toast.error(res.error || errorMsg)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6">
+        {children}
+      </div>
+    </div>
+  )
+}

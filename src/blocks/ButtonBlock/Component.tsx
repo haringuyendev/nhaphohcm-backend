@@ -5,6 +5,7 @@ import type { ButtonBlock as ButtonBlockProps } from '@/payload-types'
 import Image from 'next/image'
 import { getMediaUrl } from "@/lib/utils";
 import { Media } from "@/payload-types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export interface ButtonProps {
   icon?: (string | null) | Media;
@@ -14,13 +15,13 @@ export interface ButtonProps {
 }
 
 export const ButtonBlockComponent = ({ buttons }: { buttons?: ButtonBlockProps['buttons'] }) => {
-
+  const isMobile = useIsMobile()
   return (
     <div className="flex gap-4 flex-wrap">
       {buttons?.map((button: ButtonProps, index: number) => (
         <Button
           key={button.id || index}
-          size="xl"
+          size={isMobile ? "lg" : "xl"}
           className="bg-primary hover:bg-primary/90 text-primary-foreground"
           asChild
         >

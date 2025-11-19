@@ -27,6 +27,8 @@ import { Wards } from './collections/Wards'
 import { Properties } from './collections/Property'
 import { PropertyTypes } from './collections/PropertyType'
 import { ButtonBlock } from './blocks/ButtonBlock/config'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import nodemailer from 'nodemailer'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -82,6 +84,19 @@ export default buildConfig({
         EXPERIMENTAL_TableFeature(),
       ]
     },
+  }),
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.SMTP_SEND_USER||'info@blanca-city.com',
+    defaultFromName: process.env.SMTP_SEND_USER_NAME||'Blanca City',
+    // Any Nodemailer transport can be used
+    transport: nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    }),
   }),
   //email: nodemailerAdapter(),
   endpoints: [],

@@ -1,3 +1,4 @@
+// PropertyList.server.tsx
 import PropertyCard from "@/components/Property/PropertyCard";
 import { getProperties } from "@/endpoints/common/properties";
 import { Property } from "@/payload-types";
@@ -5,7 +6,7 @@ import { MapPin } from "lucide-react";
 import { Suspense } from "react";
 import PropertyListSkeleton from "../Skeleton/PropertyListSkeleton";
 import { PropertyPagination } from "./Pagination";
-// Define Props type to accept filters/params
+
 interface PropertyListServerProps {
     filters: { [key: string]: string | string[] | undefined };
     limit: number;
@@ -77,7 +78,6 @@ async function PropertyListContent({ filters, limit, currentPage }: PropertyList
     );
 }
 export default function PropertyListServer(props: PropertyListServerProps) {
-    console.log(props)
     // The fallback will show while the 'async' component above is running
     return (
         <>

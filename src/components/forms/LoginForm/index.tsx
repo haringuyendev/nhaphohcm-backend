@@ -1,91 +1,145 @@
 'use client'
 
-import { FormError } from '@/components/forms/FormError'
-import { FormItem } from '@/components/forms/FormItem'
-import { Message } from '@/components/Message'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useCallback, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Building2, Mail, Lock, Loader2 } from "lucide-react"
+import { z } from "zod"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation" // ĐÃ SỬA: App Router dùng next/navigation, không phải next/router
+import Link from "next/link"
 import { useAuth } from '@/providers/Auth'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod" // ĐÃ SỬA: import đúng
 
-type FormData = {
-  email: string
-  password: string
-}
+// Schema + Type
+const loginSchema = z.object({
+  email: z.string().trim().email({ message: "Email không hợp lệ" }),
+  password: z.string().min(6, { message: "Mật khẩu phải có ít nhất 6 ký tự" }),
+})
 
-export const LoginForm: React.FC = () => {
-  const searchParams = useSearchParams()
-  const allParams = searchParams.toString() ? `?${searchParams.toString()}` : ''
-  const redirect = useRef(searchParams.get('redirect'))
-  const { login } = useAuth()
+type LoginFormData = z.infer<typeof loginSchema>
+
+const Login = () => {
   const router = useRouter()
-  const [error, setError] = React.useState<null | string>(null)
+  const { login } = useAuth()
+  const [isLoading, setIsLoading] = useState(false) // Thêm state loading riêng
 
   const {
-    formState: { errors, isLoading },
-    handleSubmit,
     register,
-  } = useForm<FormData>()
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema), // ĐÃ SỬA: thêm resolver
+    mode: "onBlur",
+  })
 
-  const onSubmit = useCallback(
-    async (data: FormData) => {
-      try {
-        await login(data)
-        if (redirect?.current) router.push(redirect.current)
-        else router.push('/account')
-      } catch (_) {
-        setError('There was an error with the credentials provided. Please try again.')
-      }
-    },
-    [login, router],
-  )
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true)
+    try {
+      await login(data) // Gọi hàm login từ Auth context
+      toast.success("Đăng nhập thành công!")
+      router.push("/admin") // hoặc "/" tùy bạn
+    } catch (error: any) {
+      console.error("Login error:", error)
+      toast.error(error?.message || "Email hoặc mật khẩu không đúng")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <form className="" onSubmit={handleSubmit(onSubmit)}>
-      <Message className="classes.message" error={error} />
-      <div className="flex flex-col gap-8">
-        <FormItem>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            {...register('email', { required: 'Email is required.' })}
-          />
-          {errors.email && <FormError message={errors.email.message} />}
-        </FormItem>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-xl border-border/50 backdrop-blur-sm bg-card/95 p-4">
+        <CardHeader className="space-y-3 text-center pb-6">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-lg">
+            <Building2 className="h-8 w-8 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Đăng Nhập
+          </CardTitle>
+          <CardDescription className="text-base">
+            Đăng nhập để quản lý tin đăng bất động sản của bạn
+          </CardDescription>
+        </CardHeader>
 
-        <FormItem>
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            {...register('password', { required: 'Please provide a password.' })}
-          />
-          {errors.password && <FormError message={errors.password.message} />}
-        </FormItem>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  {...register("email")}
+                  className="pl-10 h-11"
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email.message}</p>
+              )}
+            </div>
 
-        <div className="text-primary/70 mb-6 prose prose-a:hover:text-primary dark:prose-invert">
-          <p>
-            Forgot your password?{' '}
-            <Link href={`/recover-password${allParams}`}>Click here to reset it</Link>
-          </p>
-        </div>
-      </div>
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password">Mật khẩu</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="pl-10 h-11"
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
+            </div>
 
-      <div className="flex gap-4 justify-between">
-        <Button asChild variant="outline" size="lg">
-          <Link href={`/create-account${allParams}`} className="grow max-w-[50%]">
-            Create an account
-          </Link>
-        </Button>
-        <Button className="grow" disabled={isLoading} size="lg" type="submit" variant="default">
-          {isLoading ? 'Processing' : 'Continue'}
-        </Button>
-      </div>
-    </form>
+            <div className="flex justify-end">
+              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                Quên mật khẩu?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 font-medium"
+              disabled={isLoading || isSubmitting}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Đang đăng nhập...
+                </>
+              ) : (
+                "Đăng nhập"
+              )}
+            </Button>
+
+            {/* <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Hoặc</span>
+              </div>
+            </div> */}
+
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
+
+export default Login

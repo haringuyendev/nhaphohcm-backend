@@ -22,9 +22,10 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@payloadcms/admin-bar": "3.63.0",
     "@payloadcms/db-mongodb": "3.63.0",
-    "@payloadcms/email-nodemailer": "3.63.0",
+    "@payloadcms/email-nodemailer": "^3.64.0",
     "@payloadcms/live-preview-react": "3.63.0",
     "@payloadcms/next": "3.63.0",
     "@payloadcms/plugin-ecommerce": "3.63.0",
@@ -36,7 +37,9 @@
     "@payloadcms/ui": "3.63.0",
     "@radix-ui/react-accordion": "1.2.11",
     "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.1.6",
@@ -57,6 +60,7 @@
     "lucide-react": "^0.477.0",
     "next": "^15.5.4",
     "next-themes": "0.4.6",
+    "nodemailer": "^7.0.10",
     "payload": "3.63.0",
     "payload-plugin-import-export": "^3.0.20",
     "prism-react-renderer": "^2.3.1",
@@ -68,7 +72,8 @@
     "sonner": "^1.7.2",
     "stripe": "18.5.0",
     "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -80,6 +85,7 @@
     "@testing-library/react": "16.3.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "22.5.4",
+    "@types/nodemailer": "^7.0.4",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",
     "@vercel/git-hooks": "^1.0.0",

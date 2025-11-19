@@ -1,5 +1,3 @@
-// src/app/shop/page.tsx
-
 import PropertyPageClient from '@/components/Property/PropertyList.client'
 import PropertyListServer from '@/components/Property/PropertyListServer'
 

@@ -1,4 +1,5 @@
 // src/app/[slug]/page.tsx
+
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import PropertyDetail from '@/components/Property/PropertyDetail'
