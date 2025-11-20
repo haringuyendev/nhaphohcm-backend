@@ -66,7 +66,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           {/* <LivePreviewListener /> */}
 
           <Header />
-            <main>{children}</main>
+            <main className='overflow-hidden mb-24'>{children}</main>
           {/* <Footer /> */}
           <AdminBottomBar />
         </Providers>

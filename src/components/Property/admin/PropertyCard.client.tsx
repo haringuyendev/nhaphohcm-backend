@@ -225,20 +225,24 @@ export default function PropertyCard({ property }: { property: Property }) {
       {/* === MOBILE: ẢNH TRÊN, INFO DƯỚI === */}
       {isMobile ? (
         <>
-          {/* Ảnh */}
-          <div className="relative aspect-[4/3] bg-muted">
+          <div className="relative w-full h-60 overflow-hidden rounded-t-lg bg-muted">
             <Image
-              src={getMediaUrl(property.images?.[0]?.image)}
-              alt={property.title}
-              fill
-              className="object-cover"
-              sizes="100vw"
+              src={getMediaUrl(property.images?.[0]?.image) || '/placeholder.jpg'}
+              alt={property.title || 'Bất động sản'}
+              width={800}
+              height={500}
+              className="w-full h-full object-cover"
+              priority={false}
+              placeholder="blur"
+              blurDataURL="/placeholder-blur.jpg" // optional
             />
+
             {property.is_vip && (
-              <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <div className="absolute top-2 left-2 z-10 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
                 VIP
               </div>
             )}
+
           </div>
 
           {/* Info */}

@@ -11,6 +11,8 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from "@/components/Property/admin/AdminSidebar"
+import { Metadata } from "next"
+import { mergeOpenGraph } from "@/utilities/mergeOpenGraph"
 interface PageProps {
   searchParams: Promise<{
     status?: string
@@ -44,7 +46,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
   return (
     <PropertyListClient currentStatus={status}>
       {/* Header */}
-      <div className="flex flex-1 flex-col">
+      <div className="lg:flex lg:flex-1 lg:flex-col">
         <header className="bg-card border-b mb-4 shadow-sm">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between mb-4">
@@ -74,4 +76,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
       </div>
     </PropertyListClient>
   )
+}
+export const metadata: Metadata = {
+  title: 'Quản lý Bất  động sản',
+  description: 'Quản lý Bất động sản',
+  openGraph: mergeOpenGraph({
+    title: 'Quản lý Bất động sản',
+    url: '/dashboard',
+  }),
 }

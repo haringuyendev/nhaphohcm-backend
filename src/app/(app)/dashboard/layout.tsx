@@ -26,7 +26,6 @@ const beVietnam = Be_Vietnam_Pro({
 export default async function AdminLayout({ children }: { children: ReactNode }) {
     
     return (
-
         <Providers>
             <SidebarProvider>
                 <AdminSidebar />
