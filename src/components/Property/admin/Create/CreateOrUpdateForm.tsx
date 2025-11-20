@@ -137,8 +137,8 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                 .map((img: any) => ({
                     id: img.id, // ĐÃ ĐÚNG RỒI – giữ nguyên
                     url: img.image?.url
-                        ? `${process.env.NEXT_PUBLIC_SERVER_URL}${img.image.url.startsWith('/') ? '' : '/'}${img.image.url}`
-                        : `${process.env.NEXT_PUBLIC_SERVER_URL}/media/${img.image?.filename || img.image}`,
+                        ? `${img.image.url.startsWith('/') ? '' : '/'}${img.image.url}`
+                        : `/media/${img.image?.filename || img.image}`,
                     mediaId: (img.image?.id || img.image) as string,
                 }))
             setImageItems(existingImages)

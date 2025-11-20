@@ -39,7 +39,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/forgot-password`,
+        `/api/users/forgot-password`,
         {
           method: "POST",
           headers: {
