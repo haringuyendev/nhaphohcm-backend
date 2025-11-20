@@ -51,7 +51,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <h1 className="lg:text-2xl text-lg font-bold">Quản lý Bất động sản</h1>
               <div className="flex items-center gap-2">
                 <Button asChild size="lg" className="bg-accent hover:bg-primary">
-                  <Link href="admin/dang-tin" className="lg:text-base text-sm">
+                  <Link href="/dashboard/dang-tin" className="lg:text-base text-sm">
                     <Plus className="lg:w-4 lg:h-4 lg:mr-2 w-3 h-3 mr-1" />
                     Đăng tin mới
                   </Link>
