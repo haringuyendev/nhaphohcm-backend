@@ -13,6 +13,7 @@ import React, { Suspense } from 'react'
 import './globals.css'
 import { Be_Vietnam_Pro } from "next/font/google"
 import { cn } from '@/lib/utils'
+import AdminBottomBar from '@/components/Property/admin/AdminBottomBar'
 
 const beVietnam = Be_Vietnam_Pro({
   subsets: ['latin'],
@@ -67,6 +68,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <Header />
             <main>{children}</main>
           {/* <Footer /> */}
+          <AdminBottomBar />
         </Providers>
       </body>
     </html>

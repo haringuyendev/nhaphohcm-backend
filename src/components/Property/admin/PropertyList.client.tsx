@@ -14,6 +14,8 @@ import {
 import { Upload, Download, Trash2, Undo2, Diamond, Plus } from 'lucide-react'
 import Link from 'next/link'
 import FilterButtons from './PropertyFiltersButton.server'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { AdminSidebar } from './AdminSidebar'
 
 interface Property {
   id: string
@@ -71,10 +73,8 @@ export default function PropertyListClient({ children, currentStatus }: Property
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6">
-        {children}
-      </div>
-    </div>
+      <SidebarProvider>
+          {children}
+      </SidebarProvider>
   )
 }

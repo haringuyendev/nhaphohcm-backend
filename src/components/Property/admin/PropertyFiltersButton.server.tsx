@@ -1,4 +1,3 @@
-// app/tin-dang/admin/FilterButtons.tsx
 import { Button } from '@/components/ui/button'
 import { getPropertyStats } from '@/endpoints/common/properties'
 import Link from 'next/link'
@@ -31,7 +30,7 @@ export default async function FilterButtons({ currentStatus, user }: FilterButto
         >
           <Link
             href={{
-              pathname: '/tin-dang/admin',
+              pathname: '/dashboard',
               query: { ...(key && { status: key }), page: 1 },
             }}
             replace

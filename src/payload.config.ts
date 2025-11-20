@@ -29,12 +29,14 @@ import { PropertyTypes } from './collections/PropertyType'
 import { ButtonBlock } from './blocks/ButtonBlock/config'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
@@ -103,6 +105,31 @@ export default buildConfig({
   globals: [Header, Footer],
   plugins: [
     ...plugins,
+    s3Storage({
+      collections: {
+        media: true,
+      },
+      bucket: process.env.S3_BUCKET!,
+      config: {
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+        },
+        region: process.env.S3_REGION,
+        requestHandler: {
+          httpAgent: {
+            maxSockets: 100,
+            keepAlive: true,
+          },
+          httpsAgent: {
+            maxSockets: 100,
+            keepAlive: true,
+          },
+          connectionTimeout: 5 * 1000,
+          requestTimeout: 10 * 1000,
+        },
+      },
+    }),
     // storage-adapter-placeholder
   ],
   secret: process.env.PAYLOAD_SECRET || '',

@@ -297,24 +297,11 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center gap-4">
-                        <Link href="/admin">
-                            <Button variant="ghost" size="sm">
-                                <ArrowLeft className="w-4 h-4 mr-2" />
-                                Quay lại
-                            </Button>
-                        </Link>
-                        <h1 className="text-2xl font-bold">
-                            {property ? "Chỉnh sửa tin đăng" : "Đăng tin mới"}
-                        </h1>
-                    </div>
-                </div>
-            </header>
-
+        <div className="min-h-screen bg-background mb-16">
             <div className="container mx-auto px-4 py-6 max-w-4xl">
+                <h1 className="text-2xl font-bold">
+                    {property ? "Chỉnh sửa tin đăng" : "Đăng tin mới"}
+                </h1>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* === Nhu cầu === */}
                     <Collapsible open={isDemandOpen} onOpenChange={setIsDemandOpen}>
@@ -578,7 +565,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
 
                     {/* === Nút hành động === */}
                     <div className="flex gap-4 justify-end pt-4 border-t">
-                        <Button type="button" variant="outline" onClick={() => router.push("/admin")}>
+                        <Button type="button" variant="outline" onClick={() => router.push("/dashboard")}>
                             Hủy
                         </Button>
                         <Button type="submit" disabled={isSubmitting || uploading}>

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useFilter } from '@/hooks/use-filter'
@@ -10,10 +9,10 @@ import { getMediaUrl } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { Search, Settings, Filter } from 'lucide-react'
+import { Search } from 'lucide-react'
 
 import type { Header } from 'src/payload-types'
+import { cn } from '@/utilities/cn'
 
 type Props = {
   header: Header
@@ -24,122 +23,81 @@ export function HeaderClient({ header }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isMobile = useIsMobile()
-  const { setFilterOpen, searchQuery, setSearchQuery } = useFilter()
+  const { searchQuery, setSearchQuery } = useFilter()
 
-  const isAdminPage = pathname === '/tin-dang/admin'
-
-  useEffect(() => {
-    const search = searchParams.get("search")
-    setSearchQuery(search || "")
-  }, [searchParams])
-
-  const updateSearchParams = (name: string, value: string) => {
-    // Create a new URLSearchParams instance from the current params
-    const currentParams = new URLSearchParams(Array.from(searchParams.entries()));
-
-    if (value) {
-      currentParams.set(name, value);
+  const updateSearchParams = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value.trim()) {
+      params.set("search", value.trim())
     } else {
-      currentParams.delete(name);
+      params.delete("search")
     }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
+  }
 
-    router.push(`${pathname}?${currentParams.toString()}`);
-  };
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    updateSearchParams(searchQuery)
+  }
 
   return (
     <header className="bg-card border-b sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 h-16 lg:h-20">
 
-          {/* === LOGO === */}
-          <Link href="/" className="flex items-center">
+          {/* === LOGO - Luôn hiện === */}
+          <Link href="/" className="flex-shrink-0">
             {header.logo && (
               <Image
                 src={getMediaUrl(header.logo)}
                 alt="Logo"
-                width={isMobile ? 64 : 96}
-                height={isMobile ? 64 : 96}
-                className="w-16 h-16 lg:w-24 lg:h-24 object-contain"
+                width={isMobile ? 140 : 180}
+                height={isMobile ? 56 : 72}
+                className="h-12 w-auto lg:h-16 object-contain"
                 priority
               />
             )}
           </Link>
 
-          {/* === DESKTOP: SEARCH BAR + QUẢN LÝ === */}
-          {!isMobile && (
-            <div className="flex items-center gap-3 flex-1 max-w-4xl">
-              {/* Search Bar */}
-              {header.searchBar && (
-                <div className="flex gap-2 flex-1">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <Input
-                      placeholder="Tìm kiếm bất động sản..."
-                      className="pl-10"
-                      defaultValue={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  <Button onClick={() => updateSearchParams("search", searchQuery)} className="bg-accent hover:bg-accent/90">
-                    <Search className="w-4 h-4 mr-2" />
-                    Tìm
-                  </Button>
-                </div>
-              )}
+          {/* === SEARCH BAR - HIỆN CẢ MOBILE & DESKTOP === */}
+          {header.searchBar && (
+            <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xl">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                
+                <Input
+                  type="search"
+                  placeholder="Tìm kiếm bất động sản..."
+                  className="pl-10 pr-10 h-10 lg:h-11 text-sm lg:text-base"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
 
-              {/* Quản lý + Bộ lọc */}
-              <div className="flex items-center gap-2">
-                <Button asChild variant="outline">
-                  <Link href="/tin-dang/admin">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Quản lý
-                  </Link>
+                {/* Nút tìm kiếm (mobile: bên trong, desktop: bên ngoài) */}
+                <Button
+                  type="submit"
+                  onClick={() => updateSearchParams(searchQuery)}
+                  size={isMobile ? "icon" : "default"}
+                  className={cn(
+                    "absolute right-1 top-1/2 -translate-y-1/2",
+                    isMobile ? "h-8 w-8" : "h-9 px-3"
+                  )}
+                >
+                  <Search className={isMobile ? "w-4 h-4" : "w-4 h-4 mr-2"} />
+                  {!isMobile && "Tìm"}
                 </Button>
+
               </div>
-            </div>
+            </form>
           )}
 
-          {/* === MOBILE: CHỈ NÚT SETTINGS (Sheet) === */}
-          {isMobile && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Settings className="w-5 h-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="top" className="h-auto">
-                <SheetHeader className="mb-4">
-                  <SheetTitle>Quản lý & Bộ lọc</SheetTitle>
-                </SheetHeader>
-
-                <div className="flex flex-col gap-3">
-                  <Button asChild variant="outline" size="lg" className="justify-start">
-                    <Link href="/tin-dang/admin">
-                      <Settings className="w-5 h-5 mr-3" />
-                      Quản lý tin đăng
-                    </Link>
-                  </Button>
-
-                  {!isAdminPage && (
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="justify-start"
-                      onClick={() => {
-                        setFilterOpen(true)
-                        // Đóng sheet
-                        document.querySelector('[data-radix-sheet-close]')?.dispatchEvent(
-                          new MouseEvent('click', { bubbles: true })
-                        )
-                      }}
-                    >
-                      <Filter className="w-5 h-5 mr-3" />
-                      Bộ lọc tìm kiếm
-                    </Button>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+          {/* === DESKTOP: Nút Quản lý === */}
+          {!isMobile && (
+            <Button asChild variant="outline" size="lg">
+              <Link href="/dashboard">
+                Quản lý tin đăng
+              </Link>
+            </Button>
           )}
         </div>
       </div>

@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid login')
       }
     } catch (e) {
-      throw new Error('An error occurred while attempting to login.')
+      throw e
     }
   }, [])
 
@@ -88,9 +88,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return user
       }
 
-      throw new Error('Invalid login')
+      throw new Error('Sai tên đăng nhập hoặc mật khẩu')
     } catch (e) {
-      throw new Error('An error occurred while attempting to login.')
+      throw e
     }
   }, [])
 
@@ -108,10 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null)
         setStatus('loggedOut')
       } else {
-        throw new Error('An error occurred while attempting to logout.')
+        throw new Error('Invalid logout')
       }
     } catch (e) {
-      throw new Error('An error occurred while attempting to logout.')
+      throw e
     }
   }, [])
 
@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid login')
       }
     } catch (e) {
-      throw new Error('An error occurred while attempting to login.')
+      throw e
     }
   }, [])
 
@@ -191,7 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid login')
       }
     } catch (e) {
-      throw new Error('An error occurred while attempting to login.')
+      throw e
     }
   }, [])
 

@@ -26,3 +26,26 @@ export async function resetPasswordAction(formData: FormData) {
     return { success: false, error: err.message || 'Token không hợp lệ hoặc đã hết hạn' }
   }
 }
+
+export async function updateProfileAction(formData: any) {
+    const rawData = formData instanceof FormData ? Object.fromEntries(formData.entries()) : formData
+    console.log(rawData)
+    try {
+        const payload = await getPayload({ config: configPromise })
+
+        await payload.update({
+            collection: 'users',
+            id: rawData.user,
+            data: { 
+              name: rawData.name,
+              email: rawData.email,
+              phone: rawData.phone,
+              avatar: rawData.avatar,
+            },
+        })
+
+        return { success: true, message: 'Cập nhật thông tin thành công!' }
+    } catch (err: any) {
+        return { success: false, error: err.message || 'Cập nhật thông tin thất bại' }
+    }
+}

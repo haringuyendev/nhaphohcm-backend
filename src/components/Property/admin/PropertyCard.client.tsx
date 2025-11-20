@@ -244,7 +244,7 @@ export default function PropertyCard({ property }: { property: Property }) {
           {/* Info */}
           <CardContent
             className="p-4 cursor-pointer"
-            onClick={() => router.push(`/tin-dang/admin/${property.id}`)}
+            onClick={() => router.push(`/dashboard/${property.id}`)}
           >
             <div className="flex items-center mb-2">
               <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatus().color}`}>
@@ -297,7 +297,7 @@ export default function PropertyCard({ property }: { property: Property }) {
             {/* Info */}
             <div
               className="flex-1 min-w-0 cursor-pointer group"
-              onClick={() => router.push(`/tin-dang/admin/${property.id}`)}
+              onClick={() => router.push(`/dashboard/${property.id}`)}
             >
               <h3 className="font-semibold text-lg mb-1 group-hover:text-primary line-clamp-2">
                 {property.title}

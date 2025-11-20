@@ -41,7 +41,7 @@ const Login = () => {
     try {
       await login(data) // Gọi hàm login từ Auth context
       toast.success("Đăng nhập thành công!")
-      router.push("/admin") // hoặc "/" tùy bạn
+      router.push("/dashboard") // hoặc "/" tùy bạn
     } catch (error: any) {
       console.error("Login error:", error)
       toast.error(error?.message || "Email hoặc mật khẩu không đúng")
