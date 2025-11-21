@@ -32,7 +32,7 @@ export default function BottomNavbar() {
       action: () => setFilterOpen(true), // ← Cũng mở filter luôn
       isHighlight: false 
     },
-    { icon: PlusCircle, label: "Đăng tin", path: "/dashboard", isHighlight: true },
+    { icon: PlusCircle, label: "Quản lý", path: "/dashboard", isHighlight: true },
     { 
       icon: Phone, 
       label: "Liên hệ", 

@@ -62,7 +62,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   return (
     <article>
-      <Suspense fallback={<Loading />}>
+      <Suspense key={urlSlug} fallback={<Loading />}>
         <RenderHero {...hero} />
         <RenderBlocks blocks={layout} searchParams={searchParamsValue} />
       </Suspense>
