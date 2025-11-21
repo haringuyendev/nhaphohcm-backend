@@ -159,7 +159,7 @@ export default function Filters() {
 
     return (
         <Card className="p-4 space-y-6">
-            <h3 className="font-semibold text-lg">Lọc kết quả</h3>
+            <h3 className="font-semibold text-lg">Tìm kiếm theo nhu cầu</h3>
 
             {/* ===================== TÌM KIẾM ===================== */}
             <div className="lg:hidden block">
