@@ -14,7 +14,7 @@ import { getWards } from "@/endpoints/common/wards";
 import { getProperty_types } from "@/endpoints/common/properties";
 import { useTransition } from 'react';
 
-export default function Filters() {
+export default function Filters({setFilterOpen}: {setFilterOpen?: (open: boolean) => void}) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -55,11 +55,18 @@ export default function Filters() {
         fetchWards()
     }, [pendingFilters.d]);
 
+        
+    
+
     useEffect(() => {
         const priceMin = Number(searchParams.get("price_min"));
         const priceMax = Number(searchParams.get("price_max"));
         const areaMin = Number(searchParams.get("area_min"));
         const areaMax = Number(searchParams.get("area_max"));
+        const search = searchParams.get("search");
+        const p_types = searchParams.get("p_types");
+        const d = searchParams.get("d");
+        const w = searchParams.get("w");
 
         // ✅ tìm range theo min-max
         const matchedPriceRanges = priceRanges
@@ -81,10 +88,10 @@ export default function Filters() {
             .map((a) => a.label);
 
         setPendingFilters({
-            q: searchParams.get("q") || "",
-            p_types: searchParams.get("p_types")?.split(",") || [],
-            d: searchParams.get("d")?.split(",").map(Number) || [],
-            w: searchParams.get("w")?.split(",").map(Number) || [],
+            q: search || "",
+            p_types: p_types?.split(",") || [],
+            d: d?.split(",").map(Number) || [],
+            w: w?.split(",").map(Number) || [],
             price_ranges: matchedPriceRanges,
             area_ranges: matchedAreaRanges,
         });
@@ -97,7 +104,7 @@ export default function Filters() {
     const handleApply = () => {
         const params = new URLSearchParams();
 
-        if (pendingFilters.q.trim()) params.set("q", pendingFilters.q.trim());
+        if (pendingFilters.q.trim()) params.set("search", pendingFilters.q.trim());
         if (pendingFilters.p_types.length)
             params.set("p_types", pendingFilters.p_types.join(","));
         if (pendingFilters.d.length) params.set("d", pendingFilters.d.join(","));
@@ -137,6 +144,9 @@ export default function Filters() {
             router.push(newUrl, { scroll: false });
             // router.refresh() is often unnecessary here as router.push triggers a re-render
         });
+        if (setFilterOpen) {
+            setFilterOpen(false);
+        }
     };
 
     const handleReset = () => {
@@ -155,6 +165,9 @@ export default function Filters() {
             router.push(newUrl, { scroll: false });
             router.refresh();
         });
+        if (setFilterOpen) {
+            setFilterOpen(false);
+        }
     };
 
     return (

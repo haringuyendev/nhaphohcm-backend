@@ -27,7 +27,7 @@ export default function PropertyPageClient({ children }: { children: React.React
                                 <SheetHeader>
                                 </SheetHeader>
                                 <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)]">
-                                    <Filters />
+                                    <Filters setFilterOpen={setFilterOpen}/>
                                 </div>
                             </SheetContent>
                         </Sheet>

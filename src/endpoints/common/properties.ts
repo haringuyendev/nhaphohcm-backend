@@ -17,6 +17,15 @@ const toArray = (value: string | string[] | undefined): string[] => {
   return []
 }
 
+const toSlug = (value: string) => {
+      return value.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+}
+
 export async function getProperty_types() {
   const payload = await getPayload({ config: configPromise })
   try {
@@ -35,19 +44,61 @@ export async function getProperty_types() {
     return []
   }
 }
-
+const removeVietnameseTones = (str: string): string => {
+  if (!str) return ''
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .trim()
+}
 export async function getProperties(params: any) {
   const validLimits = [10, 20, 50]
   const limit = validLimits.includes(Number(params.limit)) ? Number(params.limit) : 10
   const currentPage = Number(params.page) || 1
   const payload = await getPayload({ config: configPromise })
-  const search_query = (params.search || params.q)?.toString().trim() || ''
 
   const priceMin = params.price_min ? parseFloat(params.price_min.toString()) : undefined
   const priceMax = params.price_max ? parseFloat(params.price_max.toString()) : undefined
   const areaMin = params.area_min ? parseFloat(params.area_min.toString()) : undefined
   const areaMax = params.area_max ? parseFloat(params.area_max.toString()) : undefined
 
+  const searchConditions: Where[] = []
+  const search_query = (params.search || params.q)?.toString().trim() || ''
+  const cleanQuery = search_query ? removeVietnameseTones(search_query) : ''
+  const slugQuery = search_query ? toSlug(search_query) : ''
+  if (search_query && cleanQuery) {
+    const words = cleanQuery.split(/\s+/).filter((w) => w.length >= 2)
+
+    // 1. Tìm trong title, description, address (không dấu)
+    searchConditions.push(
+      { title: { contains: cleanQuery } },
+      { description: { contains: cleanQuery } },
+      { address: { contains: cleanQuery } },
+    )
+
+    // 2. Tìm từng từ riêng lẻ (để ra kết quả dù gõ lộn xộn)
+    words.forEach((word) => {
+      searchConditions.push(
+        { title: { contains: word } },
+        { description: { contains: word } },
+        { address: { contains: word } },
+      )
+    })
+
+    // 3. Tìm quận / phường (cả có dấu và không dấu)
+    searchConditions.push(
+      { 'district.name': { contains: search_query } },
+      { 'district.name': { contains: cleanQuery } },
+      { 'ward.name': { contains: search_query } },
+      { 'ward.name': { contains: cleanQuery } },
+    )
+
+    // 4. Tìm trong slug (đã không dấu rồi)
+    searchConditions.push({ slug: { contains: slugQuery } })
+  }
   const whereConditions: Where = {
     and: [
       { is_published: { equals: true } },
@@ -58,16 +109,7 @@ export async function getProperties(params: any) {
           { expire_at: { greater_than_equal: new Date().toISOString() } },
         ],
       },
-      ...(search_query
-        ? [
-            {
-              or: [
-                { title: { contains: search_query.toLowerCase() } },
-                { description: { contains: search_query.toLowerCase() } },
-              ],
-            },
-          ]
-        : []),
+      ...(searchConditions.length > 0 ? [{ or: searchConditions }] : []),
       ...(params.p_types ? [{ 'type.value': { in: toArray(params.p_types) } }] : []),
       ...(params.d ? [{ 'district.code': { in: toArray(params.d).map(Number) } }] : []),
       ...(params.w ? [{ 'ward.code': { in: toArray(params.w).map(Number) } }] : []),
@@ -176,9 +218,9 @@ export async function getPropertiesByStatus(params: {
 
     const searchConditions = {
       or: [
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { address: { contains: searchTerm, mode: 'insensitive' } },
-        { description: { contains: searchTerm, mode: 'insensitive' } }, // nếu có
+        { title: { contains: searchTerm } },
+        { address: { contains: searchTerm } },
+        { description: { contains: searchTerm } }, // nếu có
       ],
     }
 
@@ -570,9 +612,10 @@ export const createProperty = async (data: any) => {
     // 4. Parse description
     let descriptionJson
     try {
-      descriptionJson = typeof rawData.description === 'string'
-        ? JSON.parse(rawData.description)
-        : rawData.description
+      descriptionJson =
+        typeof rawData.description === 'string'
+          ? JSON.parse(rawData.description)
+          : rawData.description
     } catch (e) {
       return { success: false, error: 'Mô tả không hợp lệ' }
     }
@@ -607,12 +650,11 @@ export const createProperty = async (data: any) => {
     revalidatePath('/')
 
     return { success: true, data: property }
-
   } catch (err: any) {
     console.error('Create property error:', err)
     return {
       success: false,
-      error: err?.data?.errors?.[0]?.message || err.message || 'Tạo tin thất bại'
+      error: err?.data?.errors?.[0]?.message || err.message || 'Tạo tin thất bại',
     }
   }
 }
@@ -667,7 +709,7 @@ export async function updateProperty(id: string, formData: any) {
     // 7. GỌI PAYLOAD UPDATE
     const res = await payload.update({
       collection: 'properties',
-      id:id,
+      id: id,
       data: {
         title: rawData.title,
         description: descriptionJson,
