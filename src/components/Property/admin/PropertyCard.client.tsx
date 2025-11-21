@@ -232,7 +232,7 @@ export default function PropertyCard({ property }: { property: Property }) {
               width={800}
               height={500}
               className="w-full h-full object-cover"
-              priority={false}
+              priority
               placeholder="blur"
               blurDataURL="/placeholder-blur.jpg" // optional
             />
@@ -290,6 +290,7 @@ export default function PropertyCard({ property }: { property: Property }) {
                 fill
                 className="object-cover rounded-lg"
                 sizes="128px"
+                priority
               />
               {property.is_vip && (
                 <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">

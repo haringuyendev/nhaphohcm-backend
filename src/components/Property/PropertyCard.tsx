@@ -49,6 +49,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               alt={property.title}
               width={500}
               height={500}
+              priority
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
             {property.featured && (
@@ -126,6 +127,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
                   alt={`${property.title} ${index + 2}`}
                   width={500}
                   height={500}
+                  priority
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 {/* Show total count on last thumbnail */}

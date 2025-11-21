@@ -73,8 +73,8 @@ export default function PropertyListClient({ children, currentStatus }: Property
   }
 
   return (
-      <SidebarProvider>
-          {children}
-      </SidebarProvider>
+    <div className='container mx-auto'>
+      {children}
+    </div>      
   )
 }
