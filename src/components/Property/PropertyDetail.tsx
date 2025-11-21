@@ -10,7 +10,7 @@ import { ArrowLeft, Bed, Bath, Square, MapPin, Phone, Share2, Heart, ChevronLeft
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import PropertyCard from './PropertyCard'
-import { getMediaUrl, getValue } from '@/lib/utils'
+import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
 import { Property } from '@/payload-types'
 import { RichText } from '../RichText'
 
@@ -30,11 +30,6 @@ export default function PropertyDetailClient({
     // === THAY ĐỔI: Tách Dialog ra ngoài, chỉ mở khi click ảnh chính ===
     const [isImageOpen, setIsImageOpen] = useState(false)
     const router = useRouter()
-
-    const formatPrice = (price: number) => {
-        if (price >= 1_000_000_000) return `${(price / 1_000_000_000).toFixed(1)} tỷ`
-        return `${(price / 1_000_000).toFixed(0)} triệu`
-    }
 
     const pricePerSqm = Math.round(property.price / property.area / 1_000_000)
 
@@ -86,6 +81,7 @@ export default function PropertyDetailClient({
                                                 src={getMediaUrl(property.images?.[currentImageIndex].image) || ""}
                                                 alt={property.title}
                                                 className="aspect-video w-full h-full object-cover"
+                                                blurDataURL={getMediaBlurUrl(property.images?.[currentImageIndex].image) || ""}
                                             />
                                             {property.featured && (
                                                 <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
@@ -108,6 +104,8 @@ export default function PropertyDetailClient({
                                                 fill
                                                 className="object-contain"
                                                 priority
+                                                placeholder="blur"
+                                                blurDataURL={getMediaBlurUrl(property.images?.[currentImageIndex].image) || ""}
                                             />
 
                                             {/* NÚT PREV */}
@@ -222,6 +220,8 @@ export default function PropertyDetailClient({
                                             height={300}
                                             src={getMediaUrl(img.image)}
                                             alt=""
+                                            placeholder="blur"
+                                            blurDataURL={getMediaBlurUrl(img.image) || ""}
                                             className="w-full h-full object-cover"
                                         />
                                     </button>
@@ -284,6 +284,8 @@ export default function PropertyDetailClient({
                                     height={500}
                                     src={getMediaUrl(getValue(property.seller, 'avatar')) || '/default-avatar.png'}
                                     alt={getValue(property.seller, 'name')}
+                                    placeholder="blur"
+                                    blurDataURL={getMediaBlurUrl(getValue(property.seller, 'avatar')) || '/default-avatar.png'}
                                     className="w-16 h-16 rounded-full object-cover"
                                 />
                                 <div>

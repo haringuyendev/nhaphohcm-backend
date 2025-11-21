@@ -17,17 +17,12 @@ import {
 } from '@/endpoints/common/properties'
 import { Upload, Download, Trash2, Undo2, Diamond, MoreVertical } from 'lucide-react'
 import { Property } from '@/payload-types'
-import { getMediaUrl, getValue } from '@/lib/utils'
+import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
 
 export default function PropertyCard({ property }: { property: Property }) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const isMobile = useIsMobile()
-
-  const formatPrice = (price: number) =>
-    price >= 1_000_000_000
-      ? `${(price / 1_000_000_000).toFixed(1)} tỷ`
-      : `${(price / 1_000_000).toFixed(0)} triệu`
 
   const isExpired = property.expire_at ? new Date(property.expire_at) < new Date() : false
 
@@ -234,7 +229,7 @@ export default function PropertyCard({ property }: { property: Property }) {
               className="w-full h-full object-cover"
               priority
               placeholder="blur"
-              blurDataURL="/placeholder-blur.jpg" // optional
+              blurDataURL={getMediaBlurUrl(property.images?.[0]?.image) || ""} // optional
             />
 
             {property.is_vip && (
@@ -291,6 +286,7 @@ export default function PropertyCard({ property }: { property: Property }) {
                 className="object-cover rounded-lg"
                 sizes="128px"
                 priority
+                blurDataURL={getMediaBlurUrl(property.images?.[0]?.image) || ""}
               />
               {property.is_vip && (
                 <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">

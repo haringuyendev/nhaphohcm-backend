@@ -7,10 +7,11 @@ import Image from "next/image";
 interface SortableImageProps {
   id: string;
   url: string;
+  blurDataURL: string;
   onRemove: () => void;
 }
 
-export const SortableImage = ({ id, url, onRemove }: SortableImageProps) => {
+export const SortableImage = ({ id, url, blurDataURL, onRemove }: SortableImageProps) => {
   const {
     attributes,
     listeners,
@@ -37,6 +38,8 @@ export const SortableImage = ({ id, url, onRemove }: SortableImageProps) => {
         alt=""
         width={200}
         height={200}
+        placeholder="blur"
+        blurDataURL={blurDataURL}
         className="w-full h-32 object-cover rounded-lg border"
       />
 

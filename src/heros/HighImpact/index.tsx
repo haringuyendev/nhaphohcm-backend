@@ -9,6 +9,7 @@ import { Media } from '@/components/Media'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@payloadcms/ui'
 import { RichText } from '@/components/RichText'
+import { getMediaBlurUrl } from '@/lib/utils'
 
 export const HighImpactHero: React.FC<Page['hero']> = ({links, media, richText }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -68,7 +69,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({links, media, richText }
             {/* Video Background with Overlay */}
             <div className="absolute inset-0">
               {item && typeof item === 'object' && (
-                <Media fill imgClassName="object-cover" priority resource={item.image} />
+                <Media fill imgClassName="object-cover" priority resource={item.image} blurhash={getMediaBlurUrl(item.image)}/>
               )}
             </div>
           </div>

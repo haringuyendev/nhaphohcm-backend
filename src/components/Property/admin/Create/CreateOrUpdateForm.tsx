@@ -91,6 +91,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
         url: string
         mediaId?: string
         file?: File          // ← THÊM DÒNG NÀY
+        blurhash?: string
     }[]>([])
     const [existingProperty, setExistingProperty] = useState<any>(null)
 
@@ -140,6 +141,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                         ? `${img.image.url.startsWith('/') ? '' : '/'}${img.image.url}`
                         : `/media/${img.image?.filename || img.image}`,
                     mediaId: (img.image?.id || img.image) as string,
+                    blurhash: img.image?.blurhash,
                 }))
             setImageItems(existingImages)
 
@@ -347,6 +349,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                                                         <SortableImage
                                                             key={item.id}
                                                             id={item.id}
+                                                            blurDataURL={item.blurhash || ""}
                                                             url={item.url}
                                                             onRemove={() => handleRemoveImage(item.id)}
                                                         />

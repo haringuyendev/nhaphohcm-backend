@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useFilter } from '@/hooks/use-filter'
-import { getMediaUrl } from '@/lib/utils'
+import { getMediaUrl, getMediaBlurUrl } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,6 +55,7 @@ export function HeaderClient({ header }: Props) {
                 height={isMobile ? 56 : 72}
                 className="h-12 w-auto lg:h-16 object-contain"
                 priority
+                blurDataURL={getMediaBlurUrl(header.logo)}
               />
             )}
           </Link>

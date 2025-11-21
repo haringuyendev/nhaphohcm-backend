@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import type { ButtonBlock as ButtonBlockProps } from '@/payload-types'
 import Image from 'next/image'
-import { getMediaUrl } from "@/lib/utils";
+import { getMediaUrl, getMediaBlurUrl } from "@/lib/utils";
 import { Media } from "@/payload-types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -33,6 +33,7 @@ export const ButtonBlockComponent = ({ buttons }: { buttons?: ButtonBlockProps['
                 alt={button.title}
                 width={24}
                 height={24}
+                blurDataURL={getMediaBlurUrl(button.icon)}
                 className="inline-block mr-2"
               />
             )}

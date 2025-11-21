@@ -2,22 +2,13 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { formatPrice } from "@/lib/utils";
 
 interface PriceInputProps {
   defaultValue?: number;
   onChange?: (value: number) => void; // Truyền ra ngoài cho react-hook-form
 }
 
-const formatPrice = (price: number) => {
-  const formatter = new Intl.NumberFormat("vi-VN");
-  if (price >= 1_000_000_000) {
-    const billions = price / 1_000_000_000;
-    return `${billions % 1 === 0 ? formatter.format(billions) : billions.toFixed(1).replace(/\.0$/, "")} tỷ`;
-  } else {
-    const millions = price / 1_000_000;
-    return `${millions % 1 === 0 ? formatter.format(millions) : millions.toFixed(1).replace(/\.0$/, "")} triệu`;
-  }
-};
 
 const PriceInput = ({ defaultValue, onChange }: PriceInputProps) => {
   const [inputValue, setInputValue] = useState("");

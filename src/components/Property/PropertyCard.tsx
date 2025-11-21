@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Property } from "@/payload-types";
 import { RichText } from "../RichText";
-import { getMediaUrl, getValue } from "@/lib/utils";
+import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: Property;
@@ -14,13 +14,6 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) => {
-  const formatPrice = (price: number) => {
-    if (price >= 1000000000) {
-      return `${(price / 1000000000).toFixed(1)} tỷ`;
-    }
-    return `${(price / 1000000).toFixed(0)} triệu`;
-  };
-
   const pricePerSqm = Math.round(property.price / property.area / 1000000);
   const getSellerInfo = (property: Property) => {
     if (property.seller && typeof property.seller === "object") {
@@ -50,6 +43,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               width={500}
               height={500}
               priority
+              blurDataURL={getMediaBlurUrl(property.images?.[0].image) || ""}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
             {property.featured && (
@@ -111,6 +105,8 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               alt={property.title}
               width={500}
               height={500}
+              priority
+              blurDataURL={getMediaBlurUrl(property.images?.[0].image) || ""}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
           </div>
@@ -128,6 +124,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
                   width={500}
                   height={500}
                   priority
+                  blurDataURL={getMediaBlurUrl(image.image) || ""}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 {/* Show total count on last thumbnail */}

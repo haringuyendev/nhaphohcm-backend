@@ -25,6 +25,7 @@ export const Image: React.FC<MediaProps> = (props) => {
     size: sizeFromProps,
     src: srcFromProps,
     width: widthFromProps,
+    blurhash,
   } = props
 
   const [isLoading, setIsLoading] = React.useState(true)
@@ -77,6 +78,7 @@ export const Image: React.FC<MediaProps> = (props) => {
       sizes={sizes}
       src={src}
       width={!fill ? width || widthFromProps : undefined}
+      blurDataURL={blurhash}
     />
   )
 }
