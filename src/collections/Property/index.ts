@@ -27,7 +27,6 @@ const updateWardPropertyCount = async ({
 }) => {
   // SIÊU QUAN TRỌNG: KIỂM TRA NULL/UNDEFINED TRƯỚC KHI DÙNG
   if (!ward || !ward.id) {
-    console.log('[updateWardPropertyCount] Ward không hợp lệ hoặc bị xóa → bỏ qua')
     return
   }
 
@@ -49,9 +48,7 @@ const updateWardPropertyCount = async ({
       data: { propertyCount: count.totalDocs },
     })
 
-    console.log(`[updateWardPropertyCount] Ward ${ward_id} → ${count.totalDocs} tin`)
   } catch (error) {
-    console.error(`[updateWardPropertyCount] Lỗi cập nhật ward ${ward_id}:`, error)
   }
 }
 export const Properties: CollectionConfig = {

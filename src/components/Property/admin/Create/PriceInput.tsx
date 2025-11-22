@@ -27,22 +27,26 @@ const PriceInput = ({ defaultValue, onChange }: PriceInputProps) => {
 
     setInputValue(raw);
 
-    // Gợi ý thông minh
-    if (raw === "") {
+    // CHỈ gợi ý khi:
+    // - Chuỗi nhập vào có từ 1 đến 4 ký tự (hoặc 3 nếu bạn muốn chặt hơn)
+    // - Và chưa có quá nhiều số (tránh gợi ý khi đã nhập đầy đủ)
+    const shouldShowSuggestions = raw.length >= 1 && raw.length <= 4;
+
+    if (!shouldShowSuggestions || raw === "") {
       setSuggestions([]);
     } else {
       const base = Number(raw);
-      const options = [
-        base * 1_000_000,        // 90 → 90 triệu
-        base * 10_000_000,       // 900 triệu
-        base * 100_000_000,      // 9 tỷ
-        base * 1_000_000_000,    // 90 tỷ
-      ].filter((v) => v >= 1_000_000); // Chỉ gợi ý từ 1 triệu trở lên
 
-      setSuggestions(options.slice(0, 4)); // Tối đa 4 gợi ý
+      // Các hệ số phổ biến tại Việt Nam: triệu → chục triệu → trăm triệu → tỷ
+      const multipliers = [1_000_000, 10_000_000, 100_000_000, 1_000_000_000];
+      const options = multipliers
+        .map(m => base * m)
+        .filter(v => v >= 1_000_000); // ít nhất 1 triệu
+
+      setSuggestions(options.slice(0, 4));
     }
 
-    // Gọi onChange để truyền ra ngoài (cho react-hook-form)
+    // Truyền giá trị thực (số nguyên) ra ngoài cho form
     onChange?.(num);
   };
 

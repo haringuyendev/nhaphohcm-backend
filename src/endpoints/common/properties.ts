@@ -37,7 +37,6 @@ export async function getProperty_types() {
       select: { label: true, value: true },
       sort: 'label',
     })
-    // console.log("property_types", property_types)
     return property_types.docs
   } catch (error) {
     console.error('Error fetching property_types:', error)
@@ -636,8 +635,6 @@ export const createProperty = async (data: any) => {
       images: imagesPayload, // ĐÚNG ĐỊNH DẠNG: có id + image.id → giữ thứ tự + liên kết
     }
 
-    console.log('createProperty → payloadData.images:', imagesPayload)
-
     // 6. Tạo tin
     const property = await payload.create({
       collection: 'properties',
@@ -661,7 +658,6 @@ export const createProperty = async (data: any) => {
 
 // ==================== 3. UPDATE PROPERTY (HOÀN HẢO 100%) ====================
 export async function updateProperty(id: string, formData: any) {
-  console.log(id)
   const payload = await getPayload({ config: configPromise })
   try {
     // 1. Đảm bảo luôn là plain object
@@ -673,8 +669,6 @@ export async function updateProperty(id: string, formData: any) {
     if (imagesFromClient.length === 0) {
       return { success: false, error: 'Vui lòng tải lên ít nhất 1 ảnh' }
     }
-
-    console.log('imagesFromClient từ client:', imagesFromClient)
 
     // 3. Tạo slug
     const slug = rawData.title
@@ -705,14 +699,13 @@ export async function updateProperty(id: string, formData: any) {
       }
       return result
     })
-    console.log('rawData', rawData)
     // 7. GỌI PAYLOAD UPDATE
     const res = await payload.update({
       collection: 'properties',
       id: id,
       data: {
         title: rawData.title,
-        description: descriptionJson,
+        description: rawData.description,
         type: rawData.type,
         price: Number(rawData.price),
         area: Number(rawData.area),
@@ -723,7 +716,6 @@ export async function updateProperty(id: string, formData: any) {
         images: finalImages,
       },
     })
-    console.log('res', res)
     // 8. Revalidate
     revalidatePath('/admin')
     revalidatePath(`/tin-dang/${id}`)

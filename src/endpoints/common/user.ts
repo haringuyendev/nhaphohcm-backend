@@ -29,7 +29,6 @@ export async function resetPasswordAction(formData: FormData) {
 
 export async function updateProfileAction(formData: any) {
     const rawData = formData instanceof FormData ? Object.fromEntries(formData.entries()) : formData
-    console.log(rawData)
     try {
         const payload = await getPayload({ config: configPromise })
 

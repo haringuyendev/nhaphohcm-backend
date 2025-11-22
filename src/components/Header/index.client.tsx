@@ -33,6 +33,7 @@ export function HeaderClient({ header }: Props) {
     } else {
       params.delete("search")
     }
+    params.delete("page")
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 

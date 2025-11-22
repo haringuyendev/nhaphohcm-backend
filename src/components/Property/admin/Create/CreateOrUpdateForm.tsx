@@ -111,8 +111,6 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
     const districts = useDistricts(Number(watch("province")))
     const wards = useWards(Number(watch("district")))
     const propertyTypes = usePropertyTypes()
-    console.log("Property", property)
-    console.log("imageItems", imageItems)
     useEffect(() => {
         if (!property) return
 
@@ -262,7 +260,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
             // Bước 4: Tạo payload
             const payloadData = {
                 title: data.title,
-                description: JSON.stringify(data.description),
+                description: lexicalValue || data.description,
                 type: typeMatch.id,
                 price: Number(data.price),
                 area: Number(data.area),
@@ -273,7 +271,6 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                 images: imagePayload,                    // ← toàn bộ mediaId
                 seller: user?.id,     // tùy bạn truyền user thế nào
             }
-            console.log("images", payloadData)
             const result = property
                 ? await updateProperty(property.id, payloadData)
                 : await createProperty(payloadData)

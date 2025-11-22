@@ -1,16 +1,30 @@
-// components/Property/admin/Create/LexicalToolbar.tsx
 'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Bold, Italic, Link, List, ListOrdered, Undo, Redo } from 'lucide-react'
+import { Bold, Italic, LinkIcon, List, ListOrdered, Undo, Redo } from 'lucide-react' // Đổi Link thành LinkIcon để tránh conflict
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { TOGGLE_LINK_COMMAND } from '@lexical/link'
 import { FORMAT_TEXT_COMMAND } from 'lexical'
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
 import { UNDO_COMMAND, REDO_COMMAND } from 'lexical'
+import {
+  $getSelection,
+  $isRangeSelection,
+} from 'lexical'
+import { $createLinkNode } from '@lexical/link'
+import { $createTextNode, $insertNodes } from 'lexical'
+
+interface PayloadLinkOptions {
+  linkType: 'custom';
+  url: string;
+  newTab: boolean;
+  // Add rel and target if you still want them in the options, 
+  // although Payload replaces them with `newTab` internally during serialization.
+  rel?: string;
+  target?: string;
+}
 
 export default function LexicalToolbar() {
   const [editor] = useLexicalComposerContext()
@@ -19,7 +33,43 @@ export default function LexicalToolbar() {
 
   const insertLink = () => {
     if (!linkUrl.trim()) return
-    editor.dispatchCommand(TOGGLE_LINK_COMMAND, { url: linkUrl.trim() })
+
+    const url = linkUrl.trim()
+
+    editor.update(() => {
+      const selection = $getSelection()
+
+      if ($isRangeSelection(selection)) {
+        const text = selection.getTextContent() || url;
+
+        // --- FIX IS HERE ---
+        const linkNode = $createLinkNode(url, {
+          linkType: 'custom',
+          url: url,
+          newTab: true,
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        } as PayloadLinkOptions); // <-- Type assertion
+
+        const textNode = $createTextNode(text);
+        linkNode.append(textNode);
+        $insertNodes([linkNode]);
+
+      } else {
+        // --- FIX IS HERE ---
+        const linkNode = $createLinkNode(url, {
+          linkType: 'custom',
+          url: url,
+          newTab: true,
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        } as PayloadLinkOptions); // <-- Type assertion
+
+        linkNode.append($createTextNode(url));
+        $insertNodes([linkNode]);
+      }
+    })
+
     setLinkUrl('')
     setOpen(false)
   }
@@ -47,7 +97,7 @@ export default function LexicalToolbar() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button type="button" size="sm" variant="ghost">
-            <Link className="w-4 h-4" />
+            <LinkIcon className="w-4 h-4" />
           </Button>
         </DialogTrigger>
         <DialogContent>
@@ -62,6 +112,9 @@ export default function LexicalToolbar() {
               onKeyDown={(e) => e.key === 'Enter' && insertLink()}
               autoFocus
             />
+            <p className="text-xs text-muted-foreground">
+              Bôi đen văn bản trước để tạo link tùy chỉnh, hoặc để trống để dùng URL làm text.
+            </p>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Hủy
