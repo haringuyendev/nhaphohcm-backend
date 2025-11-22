@@ -59,7 +59,6 @@ const PriceInput = ({ defaultValue, onChange }: PriceInputProps) => {
         placeholder="Nhập số (ví dụ: 90 → 90 triệu, 9 tỷ...)"
         value={inputValue}
         onChange={handleInputChange}
-        className="font-mono"
       />
 
       {/* Hiển thị giá trị đã format bên dưới input */}

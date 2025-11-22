@@ -27,7 +27,7 @@ const theme = {
   },
   list: { ul: 'list-disc pl-6 mb-4', ol: 'list-decimal pl-6 mb-4' },
   quote: 'border-l-4 border-primary pl-4 italic my-6 text-muted-foreground',
-  code: 'bg-muted px-1 py-0.5 rounded font-mono text-sm',
+  code: 'bg-muted px-1 py-0.5 rounded text-sm',
 }
 // FIX: Tạo LinkNode an toàn, tránh crash khi url null
 class SafeLinkNode extends LinkNode {
