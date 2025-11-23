@@ -598,16 +598,6 @@ export const createProperty = async (data: any) => {
         imagesPayload = rawData.images
       }
     }
-
-    // 3. Tạo slug
-    const slug = (rawData.title as string)
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[đĐ]/g, 'd')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-
     // 4. Parse description
     let descriptionJson
     try {
@@ -622,7 +612,6 @@ export const createProperty = async (data: any) => {
     // 5. Dữ liệu gửi lên Payload
     const propertyData = {
       title: rawData.title as string,
-      slug,
       seller: rawData.seller as string,
       description: descriptionJson,
       type: rawData.type,
@@ -669,16 +658,6 @@ export async function updateProperty(id: string, formData: any) {
     if (imagesFromClient.length === 0) {
       return { success: false, error: 'Vui lòng tải lên ít nhất 1 ảnh' }
     }
-
-    // 3. Tạo slug
-    const slug = rawData.title
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[đĐ]/g, 'd')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-
     // 4. Parse description
     let descriptionJson: any
     try {
@@ -719,7 +698,6 @@ export async function updateProperty(id: string, formData: any) {
     // 8. Revalidate
     revalidatePath('/admin')
     revalidatePath(`/tin-dang/${id}`)
-    revalidatePath(`/tin-dang/${slug}`)
 
     return { success: true, message: 'Cập nhật tin thành công!' }
   } catch (error: any) {

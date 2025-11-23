@@ -14,7 +14,7 @@ import { TRANSFORMERS } from '@lexical/markdown'
 import { CodeNode, CodeHighlightNode } from '@lexical/code'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListNode, ListItemNode } from '@lexical/list'
-import { LinkNode } from '@lexical/link'
+import { LinkAttributes, LinkNode } from '@lexical/link'
 import LexicalToolbar from './LexicalToolbar'
 
 
@@ -30,33 +30,52 @@ const theme = {
   code: 'bg-muted px-1 py-0.5 rounded text-sm',
 }
 // FIX: Tạo LinkNode an toàn, tránh crash khi url null
+// In RichtextEditor.tsx
 class SafeLinkNode extends LinkNode {
+  __payload: LinkAttributes | undefined
+  static getType(): string {
+    return 'link'
+  }
+
+  static clone(node: SafeLinkNode): SafeLinkNode {
+    return new SafeLinkNode(node.__url, { ...node.__payload }, node.__key)
+  }
+
   static importJSON(serializedNode: any): SafeLinkNode {
-    const node = super.importJSON(serializedNode)
-    // Nếu url rỗng hoặc null → set mặc định
-    if (!node.__url || node.__url.trim() === '') {
-      node.__url = 'https://'
-    }
+    const { url, ...payload } = serializedNode
+    const node = $createSafeLinkNode(url || 'https://', payload)
+    node.setFormat(serializedNode.format)
+    node.setIndent(serializedNode.indent)
+    node.setDirection(serializedNode.direction)
     return node
   }
 
-  exportJSON() {
-    return super.exportJSON()
+  exportJSON(): any {
+    return {
+      ...super.exportJSON(),
+      type: 'link',
+      version: 1,
+      url: this.getURL(),
+      ...this.__payload,
+    }
   }
+}
+
+function $createSafeLinkNode(
+  url: string,
+  payload?: Record<string, unknown>
+): SafeLinkNode {
+  return new SafeLinkNode(url, payload)
+}
+
+function $isSafeLinkNode(node: any): node is SafeLinkNode {
+  return node instanceof SafeLinkNode
 }
 const baseEditorConfig = {
   namespace: 'PropertyEditor',
   theme,
   onError: (error: Error) => console.error('[Lexical]', error),
-  nodes: [
-    HeadingNode,
-    QuoteNode,
-    ListNode,
-    ListItemNode,
-    SafeLinkNode,
-    CodeNode,
-    CodeHighlightNode,
-  ],
+  nodes: [SafeLinkNode, HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode], // Make sure SafeLinkNode is first
 }
 
 type Props = {

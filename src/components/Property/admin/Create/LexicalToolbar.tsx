@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Bold, Italic, LinkIcon, List, ListOrdered, Undo, Redo } from 'lucide-react' // Đổi Link thành LinkIcon để tránh conflict
+import { Bold, Italic, LinkIcon, List, ListOrdered, Undo, Redo, Unlink } from 'lucide-react' // Đổi Link thành LinkIcon để tránh conflict
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { FORMAT_TEXT_COMMAND } from 'lexical'
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
@@ -13,66 +13,80 @@ import {
   $getSelection,
   $isRangeSelection,
 } from 'lexical'
-import { $createLinkNode } from '@lexical/link'
+import { $createLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link'
 import { $createTextNode, $insertNodes } from 'lexical'
+import { LinkPayload } from 'node_modules/@payloadcms/richtext-lexical/dist/features/link/client/plugins/floatingLinkEditor/types'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 
 interface PayloadLinkOptions {
   linkType: 'custom';
   url: string;
   newTab: boolean;
-  // Add rel and target if you still want them in the options, 
-  // although Payload replaces them with `newTab` internally during serialization.
-  rel?: string;
   target?: string;
 }
 
 export default function LexicalToolbar() {
   const [editor] = useLexicalComposerContext()
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
-  const [open, setOpen] = useState(false)
+  const [newTab, setNewTab] = useState(true)
+  const [isLink, setIsLink] = useState(false)
 
-  const insertLink = () => {
-    if (!linkUrl.trim()) return
-
-    const url = linkUrl.trim()
-
-    editor.update(() => {
+  const updateToolbar = useCallback(() => {
+    editor.getEditorState().read(() => {
       const selection = $getSelection()
-
       if ($isRangeSelection(selection)) {
-        const text = selection.getTextContent() || url;
-
-        // --- FIX IS HERE ---
-        const linkNode = $createLinkNode(url, {
-          linkType: 'custom',
-          url: url,
-          newTab: true,
-          rel: 'noopener noreferrer',
-          target: '_blank',
-        } as PayloadLinkOptions); // <-- Type assertion
-
-        const textNode = $createTextNode(text);
-        linkNode.append(textNode);
-        $insertNodes([linkNode]);
-
-      } else {
-        // --- FIX IS HERE ---
-        const linkNode = $createLinkNode(url, {
-          linkType: 'custom',
-          url: url,
-          newTab: true,
-          rel: 'noopener noreferrer',
-          target: '_blank',
-        } as PayloadLinkOptions); // <-- Type assertion
-
-        linkNode.append($createTextNode(url));
-        $insertNodes([linkNode]);
+        const node = selection.getNodes()[0]
+        if (node) {
+          const parent = node.getParent()
+          setIsLink($isLinkNode(parent) || $isLinkNode(node))
+        }
       }
     })
+  }, [editor])
 
+  const insertLink = useCallback(() => {
+    if (linkUrl.trim() === '') {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
+      return
+    }
+
+    const payload: PayloadLinkOptions = {
+      url: linkUrl,
+      linkType: 'custom',
+      target: newTab ? '_blank' : '_self',
+      newTab
+    }
+
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, payload)
     setLinkUrl('')
-    setOpen(false)
+    setIsLinkDialogOpen(false)
+  }, [editor, linkUrl, newTab])
+
+  const handleLinkClick = () => {
+    editor.getEditorState().read(() => {
+      const selection = $getSelection()
+      if ($isRangeSelection(selection)) {
+        const node = selection.getNodes()[0]
+        if (node) {
+          const parent = node.getParent()
+          if ($isLinkNode(parent)) {
+            setLinkUrl(parent.getURL())
+            setNewTab(parent.getTarget() === '_blank')
+          } else if ($isLinkNode(node)) {
+            setLinkUrl(node.getURL())
+            setNewTab(node.getTarget() === '_blank')
+          }
+        }
+      }
+    })
+    setIsLinkDialogOpen(true)
   }
+
+  const removeLink = useCallback(() => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
+  }, [editor])
 
   return (
     <div className="flex items-center gap-1 p-3 border-b bg-muted/50 flex-wrap">
@@ -94,36 +108,70 @@ export default function LexicalToolbar() {
         <Italic className="w-4 h-4" />
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button" size="sm" variant="ghost">
-            <LinkIcon className="w-4 h-4" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Chèn liên kết</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="https://example.com"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && insertLink()}
-              autoFocus
-            />
-            <p className="text-xs text-muted-foreground">
-              Bôi đen văn bản trước để tạo link tùy chỉnh, hoặc để trống để dùng URL làm text.
-            </p>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Hủy
-              </Button>
-              <Button onClick={insertLink}>Chèn</Button>
+      {isLink ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={removeLink}
+          title="Remove link"
+        >
+          <Unlink className="w-4 h-4" />
+        </Button>
+      ) : (
+        <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={handleLinkClick}
+              title="Insert link"
+            >
+              <LinkIcon className="w-4 h-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{isLink ? 'Edit Link' : 'Insert Link'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="link-url">URL</Label>
+                <Input
+                  id="link-url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      insertLink()
+                    }
+                  }}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="new-tab"
+                  checked={newTab}
+                  onCheckedChange={(checked) => setNewTab(Boolean(checked))}
+                />
+                <Label htmlFor="new-tab">Open in new tab</Label>
+              </div>
+              <div className="flex justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsLinkDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={insertLink}>Insert</Button>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
 
       <Button
         type="button"

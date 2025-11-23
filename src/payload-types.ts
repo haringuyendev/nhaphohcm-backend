@@ -730,10 +730,9 @@ export interface Property {
    */
   seller: string | User;
   /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   * Tự động tạo từ tiêu đề, nếu trùng sẽ thêm -1, -2...
    */
-  generateSlug?: boolean | null;
-  slug: string;
+  slug?: string | null;
   meta?: {
     title?: string | null;
     /**
@@ -1147,7 +1146,6 @@ export interface PropertiesSelect<T extends boolean = true> {
   bumped_at?: T;
   last_bumped_at?: T;
   seller?: T;
-  generateSlug?: T;
   slug?: T;
   meta?:
     | T

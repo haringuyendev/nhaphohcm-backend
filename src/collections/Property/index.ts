@@ -16,6 +16,7 @@ import {
   OverviewField,
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
+import { generateUniqueSlug } from './hooks/generateUniqueSlug'
 
 // src/collections/Property/hooks/updateWardCount.ts
 const updateWardPropertyCount = async ({
@@ -47,9 +48,7 @@ const updateWardPropertyCount = async ({
       id: ward_id,
       data: { propertyCount: count.totalDocs },
     })
-
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 export const Properties: CollectionConfig = {
   slug: 'properties',
@@ -287,8 +286,18 @@ export const Properties: CollectionConfig = {
                 description: 'Tự động gán theo user đang đăng nhập',
               },
             },
-
-            slugField(),
+            {
+              name: 'slug',
+              type: 'text',
+              label: 'Slug (URL)',
+              unique: true,
+              index: true,
+              admin: {
+                position: 'sidebar',
+                readOnly: true, // người dùng không sửa được
+                description: 'Tự động tạo từ tiêu đề, nếu trùng sẽ thêm -1, -2...',
+              },
+            },
           ],
           label: 'Chi tiết tin đăng',
         },
@@ -325,6 +334,9 @@ export const Properties: CollectionConfig = {
   ],
 
   hooks: {
-    beforeChange: [autoAssignSeller],
+    beforeChange: [
+      autoAssignSeller,
+      generateUniqueSlug, // THÊM DÒNG NÀY LÀ XONG!
+    ],
   },
 }
