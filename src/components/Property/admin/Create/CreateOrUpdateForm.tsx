@@ -277,7 +277,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
 
             if (result.success) {
                 toast.success(property ? "Cập nhật thành công!" : "Đăng tin thành công!")
-                router.back()
+                router.push('/dashboard')
             } else {
                 toast.error(result.error || "Lỗi hệ thống")
             }

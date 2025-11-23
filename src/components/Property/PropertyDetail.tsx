@@ -47,7 +47,7 @@ export default function PropertyDetailClient({
             <header className="bg-card border-b sticky top-0 z-10 shadow-sm">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
-                        <Button onClick={() => router.back()} variant="ghost" size="sm">
+                        <Button onClick={() => router.push('/')} variant="ghost" size="sm">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Quay lại
                         </Button>
