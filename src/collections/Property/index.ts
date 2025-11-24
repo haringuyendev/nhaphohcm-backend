@@ -131,6 +131,7 @@ export const Properties: CollectionConfig = {
                   HorizontalRuleFeature(),
                 ],
               }),
+              // validate: () => true,
             },
 
             // 🖼️ Hình ảnh

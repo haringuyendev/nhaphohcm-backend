@@ -8,15 +8,11 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
-import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
-import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin'
-import { TRANSFORMERS } from '@lexical/markdown'
-import { CodeNode, CodeHighlightNode } from '@lexical/code'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListNode, ListItemNode } from '@lexical/list'
-import { LinkAttributes, LinkNode } from '@lexical/link'
 import LexicalToolbar from './LexicalToolbar'
-
+import { LinkNode } from '@payloadcms/richtext-lexical/client'
+import LinkCommandPlugin from './LinkPlugin'
 
 const theme = {
   paragraph: 'mb-4 text-base leading-relaxed',
@@ -29,54 +25,7 @@ const theme = {
   quote: 'border-l-4 border-primary pl-4 italic my-6 text-muted-foreground',
   code: 'bg-muted px-1 py-0.5 rounded text-sm',
 }
-// FIX: Tạo LinkNode an toàn, tránh crash khi url null
-// In RichtextEditor.tsx
-class SafeLinkNode extends LinkNode {
-  __payload: LinkAttributes | undefined
-  static getType(): string {
-    return 'link'
-  }
 
-  static clone(node: SafeLinkNode): SafeLinkNode {
-    return new SafeLinkNode(node.__url, { ...node.__payload }, node.__key)
-  }
-
-  static importJSON(serializedNode: any): SafeLinkNode {
-    const { url, ...payload } = serializedNode
-    const node = $createSafeLinkNode(url || 'https://', payload)
-    node.setFormat(serializedNode.format)
-    node.setIndent(serializedNode.indent)
-    node.setDirection(serializedNode.direction)
-    return node
-  }
-
-  exportJSON(): any {
-    return {
-      ...super.exportJSON(),
-      type: 'link',
-      version: 1,
-      url: this.getURL(),
-      ...this.__payload,
-    }
-  }
-}
-
-function $createSafeLinkNode(
-  url: string,
-  payload?: Record<string, unknown>
-): SafeLinkNode {
-  return new SafeLinkNode(url, payload)
-}
-
-function $isSafeLinkNode(node: any): node is SafeLinkNode {
-  return node instanceof SafeLinkNode
-}
-const baseEditorConfig = {
-  namespace: 'PropertyEditor',
-  theme,
-  onError: (error: Error) => console.error('[Lexical]', error),
-  nodes: [SafeLinkNode, HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode], // Make sure SafeLinkNode is first
-}
 
 type Props = {
   initialValue?: any
@@ -86,29 +35,23 @@ type Props = {
 
 
 export default function LexicalEditor({ initialValue, onChange, placeholder = "Nhập mô tả chi tiết..." }: Props) {
-    // Add logic to load initialValue
-    const initialConfig = {
-    ...baseEditorConfig,
-    editorState: (editor: any) => {
-      if (!initialValue) return;
-
-      try {
-        // nếu initialValue là JSON object thì load
-        const parsed = editor.parseEditorState(
-          typeof initialValue === "string"
-            ? initialValue
-            : JSON.stringify(initialValue)
-        );
-        editor.setEditorState(parsed);
-      } catch (err) {
-        console.error("Parse Lexical failed:", err);
-      }
-    },
-  };
-
+  // Add logic to load initialValue
+  const config = {
+    namespace: 'PropertyEditor',
+    theme,
+    onError: (error:any) => console.error(error),
+    nodes: [
+      LinkNode,           // QUAN TRỌNG NHẤT!
+      HeadingNode,
+      QuoteNode,
+      ListNode,
+      ListItemNode,
+    ],
+    editorState: initialValue ? JSON.stringify(initialValue) : undefined,
+  }
 
   return (
-    <LexicalComposer initialConfig={initialConfig}>
+    <LexicalComposer initialConfig={config}>
       <div className="border rounded-lg overflow-hidden shadow-sm">
         {/* Use the self-built Toolbar */}
         <LexicalToolbar />
@@ -131,14 +74,14 @@ export default function LexicalEditor({ initialValue, onChange, placeholder = "N
           />
           <OnChangePlugin onChange={(editorState) => {
             editorState.read(() => {
-              // Send JSON data to the parent component's onChange function
-              onChange(editorState.toJSON())
+              const json = editorState.toJSON()
+              console.log('Lexical State →', json)
+              onChange(json) // vẫn gửi lên parent như cũ
             })
           }} />
           <HistoryPlugin />
           <ListPlugin />
-          <LinkPlugin />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <LinkCommandPlugin />
         </div>
       </div>
     </LexicalComposer>

@@ -195,6 +195,52 @@
   .hero-richtext p{
     @apply lg:text-lg md:text-base text-sm my-4 
   }
+  .property_richtext a {
+  /* Bắt buộc để căn giữa theo dòng */
+  @apply inline-block align-middle;   /* <- quan trọng nhất */
+
+  /* Đẹp hơn + hover mượt */
+  @apply bg-gradient-to-r from-emerald-400 to-cyan-500
+         text-white lg:text-base text-sm
+         px-2 py-1.5
+         my-1
+         rounded-full
+         shadow-lg hover:shadow-xl
+         transition-all duration-300 ease-out
+         relative overflow-hidden
+         whitespace-nowrap;
+
+        /* Hiệu ứng shimmer khi hover */
+        &::before {
+          content: '';
+          @apply absolute inset-0 bg-white/30 -translate-x-full 
+                transition-transform duration-700;
+        }
+
+        &:hover {
+          @apply scale-105 shadow-2xl ring-4 ring-emerald-300/50;
+          &::before {
+            @apply translate-x-full;
+          }
+        }
+
+        &:focus-visible {
+          @apply outline-none ring-4 ring-emerald-400/70;
+        }
+      }
+
+      /* Thêm dòng này để toàn bộ đoạn text căn giữa theo chiều dọc */
+      .property_richtext p,
+      .property_richtext div {
+        @apply leading-relaxed; /* hoặc leading-normal */
+      }
+
+      /* Nếu vẫn chưa vừa mắt thì thêm cái này (siêu hiệu quả) */
+      .property_richtext {
+        line-height: 2.2 !important; /* hoặc 2.4, 2.6 tùy độ cao badge */
+      }
+  
+  
 }
 html {
   opacity: 0;

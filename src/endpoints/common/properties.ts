@@ -18,12 +18,13 @@ const toArray = (value: string | string[] | undefined): string[] => {
 }
 
 const toSlug = (value: string) => {
-      return value.toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[đĐ]/g, 'd')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 export async function getProperty_types() {
@@ -678,6 +679,7 @@ export async function updateProperty(id: string, formData: any) {
       }
       return result
     })
+    // console.log(JSON.stringify(rawData.description))
     // 7. GỌI PAYLOAD UPDATE
     const res = await payload.update({
       collection: 'properties',
@@ -701,7 +703,10 @@ export async function updateProperty(id: string, formData: any) {
 
     return { success: true, message: 'Cập nhật tin thành công!' }
   } catch (error: any) {
-    console.error('Update property error:', error)
-    return { success: false, error: error.message || 'Cập nhật thất bại' }
+    console.log('🔥 PAYLOAD ERROR RAW:', error)
+    console.log('🔥 PAYLOAD ERROR DATA:', error.data)
+    console.log('🔥 PAYLOAD ERROR CAUSE:', error.cause)
+    console.log('🔥 PAYLOAD ERROR MESSAGE:', error.message)
+    throw error
   }
 }

@@ -269,7 +269,7 @@ export default function PropertyDetailClient({
 
                             <div>
                                 <h2 className="text-xl font-semibold mb-3">Mô tả</h2>
-                                {property.description && <RichText enableGutter={false} enableProse={false} data={property.description} />}
+                                {property.description && <RichText className="property_richtext" enableGutter={false} enableProse={false} data={property.description} />}
                             </div>
                         </Card>
                     </div>
