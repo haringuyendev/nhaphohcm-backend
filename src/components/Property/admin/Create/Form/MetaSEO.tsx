@@ -154,17 +154,17 @@ export default function MetaSEO({ property, setValue, watch }: MetaSEOProps) {
 
             {/* Live Preview */}
             <div className="border rounded-lg p-4 bg-blue-50/50 dark:bg-blue-950/20">
-              <p className="text-sm font-medium mb-3 text-blue-800 dark:text-blue-300">
+              <p className="text-sm font-medium mb-3 text-black">
                 Xem trước trên Google:
               </p>
               <div className="space-y-1">
-                <h3 className="text-lg font-medium text-blue-700 dark:text-blue-400 line-clamp-1">
+                <h3 className="text-lg font-medium text-black line-clamp-1">
                   {metaTitle || property?.title || "Tiêu đề tin đăng của bạn..."}
                 </h3>
-                <p className="text-sm text-green-700 dark:text-green-400">
-                  https://yourdomain.com/p/{property?.slug || "slug-tin-dang"}
+                <p className="text-sm text-black">
+                  https://nhaphohcm.com.vn/tin-dang/{property?.slug || "slug-tin-dang"}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="text-sm text-gray-600 line-clamp-2">
                   {metaDescription || "Mô tả ngắn gọn, hấp dẫn về bất động sản của bạn sẽ hiện ở đây khi tìm kiếm trên Google..."}
                 </p>
               </div>

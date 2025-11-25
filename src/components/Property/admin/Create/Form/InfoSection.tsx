@@ -73,7 +73,7 @@ function MainInfoSection({
 
             {/* Loại bất động sản */}
             <div>
-              <Label className="mb-2">
+              <Label className="mb-2 text-label">
                 Loại bất động sản <span className="text-destructive">*</span>
               </Label>
               <Select
@@ -96,7 +96,7 @@ function MainInfoSection({
 
             {/* Diện tích */}
             <div>
-              <Label className="mb-2">
+              <Label className="mb-2 text-label">
                 Diện tích (m²) <span className="text-destructive">*</span>
               </Label>
               <Input
@@ -110,7 +110,7 @@ function MainInfoSection({
 
             {/* Giá tiền */}
             <div>
-              <Label className="mb-2">
+              <Label className="mb-2 text-label">
                 Giá tiền <span className="text-destructive">*</span>
               </Label>
               <PriceInput

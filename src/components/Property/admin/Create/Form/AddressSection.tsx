@@ -175,7 +175,6 @@ function AddressSection({
 
                 <CollapsibleContent>
                     <div className="p-6 pt-0 space-y-6">
-
                         {/* Ảnh */}
                         <div>
                             <Label className="mb-2 text-label block">Hình ảnh <span className="text-destructive">*</span></Label>
@@ -212,9 +211,9 @@ function AddressSection({
                         </div>
 
                         {/* Địa chỉ */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <div>
-                                <Label className="text-label">Tỉnh/Thành phố <span className="text-destructive">*</span></Label>
+                                <Label className="text-label mb-2">Tỉnh/Thành phố <span className="text-destructive">*</span></Label>
                                 <Select
                                     value={location.province}
                                     onValueChange={(v) => { if (provinces.length > 0) setLocation({ ...location, province: v }) }}
@@ -229,7 +228,7 @@ function AddressSection({
                             </div>
 
                             <div>
-                                <Label className="text-label">Quận/Huyện <span className="text-destructive">*</span></Label>
+                                <Label className="text-label mb-2">Quận/Huyện <span className="text-destructive">*</span></Label>
                                 <Select
                                     value={location.district}
                                     onValueChange={(v) => { if (districts.length > 0) setLocation({ ...location, district: v }) }}
@@ -246,7 +245,7 @@ function AddressSection({
 
                             {/* Phường/Xã - PHIÊN BẢN ĐẸP NHẤT */}
                             <div>
-                                <Label className="text-label">Phường/Xã</Label>
+                                <Label className="text-label mb-2">Phường/Xã</Label>
                                 <Select
                                     value={location.ward}
                                     onValueChange={(v) => { if (wards.length > 0) setLocation({ ...location, ward: v }) }}
@@ -274,7 +273,7 @@ function AddressSection({
                             </div>
 
                             <div>
-                                <Label>Địa chỉ cụ thể <span className="text-destructive">*</span></Label>
+                                <Label className="text-label mb-2">Địa chỉ cụ thể <span className="text-destructive">*</span></Label>
                                 <Input
                                     {...register("address")}
                                     placeholder="Ví dụ: 123 Nguyễn Văn Cừ"
