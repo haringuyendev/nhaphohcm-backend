@@ -17,6 +17,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { generateUniqueSlug } from './hooks/generateUniqueSlug'
+import { autoSetExpireDate } from './hooks/autoSetExprireDate'
 
 // src/collections/Property/hooks/updateWardCount.ts
 const updateWardPropertyCount = async ({
@@ -337,7 +338,8 @@ export const Properties: CollectionConfig = {
   hooks: {
     beforeChange: [
       autoAssignSeller,
-      generateUniqueSlug, // THÊM DÒNG NÀY LÀ XONG!
+      generateUniqueSlug,
+      autoSetExpireDate,
     ],
   },
 }
