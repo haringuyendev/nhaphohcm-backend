@@ -240,7 +240,37 @@
         line-height: 2.2 !important; /* hoặc 2.4, 2.6 tùy độ cao badge */
       }
   
-  
+      /* Ẩn hoàn toàn thanh cuộn trên mọi trình duyệt */
+    .scrollbar-hide {
+      -ms-overflow-style: none;      /* IE và Edge */
+      scrollbar-width: none;         /* Firefox */
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;                 /* Chrome, Safari, Opera */
+    }
+
+    /* Nếu muốn đẹp hơn: custom scrollbar mỏng (khi hover mới hiện) */
+    .scrollbar-custom {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.3s;
+    }
+    .scrollbar-custom:hover {
+      scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* xám nhạt */
+    }
+    .scrollbar-custom::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-custom::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scrollbar-custom::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 3px;
+    }
+    .scrollbar-custom:hover::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.5);
+    }
 }
 html {
   opacity: 0;

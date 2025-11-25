@@ -27,17 +27,25 @@ export default function PropertyPageClient({ children }: { children: React.React
                                 <SheetHeader>
                                 </SheetHeader>
                                 <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)]">
-                                    <Filters setFilterOpen={setFilterOpen}/>
+                                    <Filters setFilterOpen={setFilterOpen} />
                                 </div>
                             </SheetContent>
                         </Sheet>
                     </div>
-                    {/* Sidebar filters */}
-                    {<aside className="lg:col-span-1 lg:block hidden">
-                        <div className="sticky top-24 bg-card border rounded-lg p-4">
-                            <Filters />
+                    {/* Sidebar filters - CHỈ SỬA TỪ ĐÂY */}
+                    <aside className="hidden lg:block lg:col-span-1">
+                        {/* Lớp 1: Sticky container – dính vào top */}
+                        <div className="sticky top-24 h-screen">
+                            {/* Lớp 2: Scroll container – chỉ chịu trách nhiệm cuộn + ẩn scrollbar */}
+                            <div className="h-full overflow-y-auto scrollbar-hide pr-2">
+                                {/* Nội dung filter – thêm padding để tránh dính sát mép */}
+                                <div className="bg-card space-y-6 min-h-[calc(100vh-6rem)]">
+                                    <Filters />
+                                </div>
+                            </div>
                         </div>
-                    </aside>}
+                    </aside>
+                    {/* ĐẾN ĐÂY */}
 
                     {/* Main content */}
                     <main className="lg:col-span-3">

@@ -47,7 +47,19 @@ export default function LexicalEditor({ initialValue, onChange, placeholder = "N
       ListNode,
       ListItemNode,
     ],
-    editorState: initialValue ? JSON.stringify(initialValue) : undefined,
+    editorState: initialValue
+    ? (editor:any) => {
+        try {
+          const parsedState = editor.parseEditorState(initialValue)
+          if (!parsedState.isEmpty()) {
+            editor.setEditorState(parsedState)
+          }
+        } catch (e) {
+          console.warn('Failed to parse initial editor state', e)
+          // Không làm gì → Lexical sẽ tự tạo paragraph trống
+        }
+      }
+    : null,
   }
 
   return (
