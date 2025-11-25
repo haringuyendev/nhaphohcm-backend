@@ -271,6 +271,11 @@
     .scrollbar-custom:hover::-webkit-scrollbar-thumb {
       background: rgba(156, 163, 175, 0.5);
     }
+    .sortable-image * {
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+}
+    
 }
 html {
   opacity: 0;

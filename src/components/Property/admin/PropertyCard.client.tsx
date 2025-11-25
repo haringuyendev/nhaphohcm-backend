@@ -72,6 +72,10 @@ export default function PropertyCard({ property }: { property: Property }) {
     handleAction(() => updateVipStatus(property.id, 7, true), 'Tin đã lên VIP 7 ngày!')
   }
 
+  const imageUrl = getMediaUrl(property.images?.[0]?.image) || '/placeholder.jpg'
+  const blurUrl = getMediaBlurUrl(property.images?.[0]?.image)
+  const hasBlur = !!blurUrl && blurUrl.length > 10 // Đảm bảo không phải chuỗi rỗng
+
   const ActionButtons = () => (
     <div className="flex flex-wrap gap-1 mt-2">
       {/* Đẩy tin */}
@@ -228,8 +232,8 @@ export default function PropertyCard({ property }: { property: Property }) {
               height={500}
               className="w-full h-full object-cover"
               priority
-              placeholder="blur"
-              blurDataURL={getMediaBlurUrl(property.images?.[0]?.image) || ""} // optional
+              placeholder={hasBlur ? 'blur' : undefined}
+              blurDataURL={hasBlur ? blurUrl : undefined}
             />
 
             {property.is_vip && (
@@ -285,8 +289,9 @@ export default function PropertyCard({ property }: { property: Property }) {
                 fill
                 className="object-cover rounded-lg"
                 sizes="128px"
+                placeholder={hasBlur ? 'blur' : undefined}
                 priority
-                blurDataURL={getMediaBlurUrl(property.images?.[0]?.image) || ""}
+                blurDataURL={hasBlur ? blurUrl : undefined}
               />
               {property.is_vip && (
                 <div className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
