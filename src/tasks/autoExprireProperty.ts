@@ -5,7 +5,7 @@ export const AutoExpireProperties: TaskConfig = {
   retries: 3,
   schedule: [
     {
-      cron: '*/2 * * * *',
+      cron: '0 */4 * * *',
       queue: 'exprire_property',
     },
   ],
