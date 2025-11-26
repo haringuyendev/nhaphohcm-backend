@@ -87,7 +87,7 @@ export default function LexicalEditor({ initialValue, onChange, placeholder = "N
           <OnChangePlugin onChange={(editorState) => {
             editorState.read(() => {
               const json = editorState.toJSON()
-              console.log('Lexical State →', json)
+              // console.log('Lexical State →', json)
               onChange(json) // vẫn gửi lên parent như cũ
             })
           }} />

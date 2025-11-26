@@ -559,6 +559,8 @@ export async function getPropertyById(id: string) {
         area: true,
         price: true,
         images: true,
+        meta:true,
+        slug:true
       },
     })
 
@@ -580,12 +582,8 @@ export const createProperty = async (data: any) => {
   const payload = await getPayload({ config: configPromise })
 
   try {
-    // 1. Chuẩn hóa dữ liệu đầu vào
     const rawData = data instanceof FormData ? Object.fromEntries(data.entries()) : data
 
-    // 2. QUAN TRỌNG: Giữ nguyên mảng images từ client gửi lên
-    // Frontend hiện tại gửi đúng định dạng Payload cần:
-    // [{ image: { id: "xxx" }, id: "row_abc" }, ...]
     let imagesPayload: any[] = []
 
     if (rawData.images) {
@@ -599,6 +597,7 @@ export const createProperty = async (data: any) => {
         imagesPayload = rawData.images
       }
     }
+    
     // 4. Parse description
     let descriptionJson
     try {
@@ -623,6 +622,11 @@ export const createProperty = async (data: any) => {
       ward: rawData.ward || undefined,
       address: rawData.address as string,
       images: imagesPayload, // ĐÚNG ĐỊNH DẠNG: có id + image.id → giữ thứ tự + liên kết
+      meta:{
+        title: rawData.metaTitle,
+        description: rawData.metaDescription,
+        image: rawData.metaImage
+      }
     }
 
     // 6. Tạo tin
@@ -681,10 +685,7 @@ export async function updateProperty(id: string, formData: any) {
     })
     // console.log(JSON.stringify(rawData.description))
     // 7. GỌI PAYLOAD UPDATE
-    const res = await payload.update({
-      collection: 'properties',
-      id: id,
-      data: {
+    const payloadData={
         title: rawData.title,
         description: rawData.description,
         type: rawData.type,
@@ -695,7 +696,16 @@ export async function updateProperty(id: string, formData: any) {
         ward: rawData.ward || undefined,
         address: rawData.address,
         images: finalImages,
-      },
+        meta:{
+          title: rawData.metaTitle,
+          description: rawData.metaDescription,
+          image: rawData.metaImage
+        }
+      }
+    const res = await payload.update({
+      collection: 'properties',
+      id: id,
+      data: payloadData,
     })
     // 8. Revalidate
     revalidatePath('/admin')

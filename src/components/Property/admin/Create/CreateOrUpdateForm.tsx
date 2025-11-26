@@ -28,6 +28,9 @@ const propertySchema = z.object({
     type: z.string().nonempty(),
     area: z.number().positive("Diện tích phải lớn hơn 0"),
     price: z.number().positive("Giá phải lớn hơn 0"),
+    metaTitle:z.string(),
+    metaDescription:z.string(),
+    metaImage:z.any().optional(),
 })
 
 type PropertyFormData = z.infer<typeof propertySchema>
@@ -53,6 +56,13 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
         file?: File          // ← THÊM DÒNG NÀY
         blurhash?: string
     }[]>([])
+    const [metaImage, setMetaImage] = useState<{
+        id: string
+        url: string
+        mediaId?: string
+        file?: File          // ← THÊM DÒNG NÀY
+        blurhash?: string
+    }|null>(null)
     const [existingProperty, setExistingProperty] = useState<any>(null)
 
     const {
@@ -81,6 +91,8 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                 type: (property.type as any)?.id ?? "",
                 area: Number(property.area ?? 0),
                 price: Number(property.price ?? 0),
+                metaTitle: property.meta?.title ?? "",
+                metaDescription: property.meta?.description ?? "",
             })
             setIsLoading(false)
         }
@@ -126,6 +138,17 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                 })
             }
 
+            let finalMetaImageId: string | undefined = undefined
+            if (metaImage?.file) {
+                const metaRes = await uploadMedia(metaImage.file)
+                if (metaRes.success) finalMetaImageId = metaRes.id
+            } else if (metaImage?.mediaId) {
+                finalMetaImageId = metaImage.mediaId
+            } else if (imageItems.length > 0) {
+                // Fallback: dùng ảnh đầu tiên
+                const first = imageItems[0]
+                finalMetaImageId = first.mediaId || undefined
+            }
             // Bước 4: Tạo payload
             const payloadData = {
                 title: data.title,
@@ -139,6 +162,9 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                 address: data.address,
                 images: imagePayload,                    // ← toàn bộ mediaId
                 seller: user?.id,     // tùy bạn truyền user thế nào
+                metaTitle: data.metaTitle,
+                metaDescription: data.metaDescription,
+                metaImage: finalMetaImageId,
             }
             const result = property
                 ? await updateProperty(property.id, payloadData)
@@ -205,7 +231,7 @@ export default function PostProperty({ user, property }: PostPropertyProps) {
                         setValue={setValue}
                     />
 
-                    <MetaSEO property={property} watch={watch} setValue={setValue} />
+                    <MetaSEO property={property} watch={watch} setValue={setValue} onImageChange={setMetaImage}/>
 
                     {/* Nút bấm */}
                     <div className="flex gap-4 justify-end pt-6 border-t">

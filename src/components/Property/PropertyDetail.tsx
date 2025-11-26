@@ -19,7 +19,10 @@ type PropertyDetailClientProps = {
     wardStats: any
     relatedProperties: Property[]
 }
-
+const hasBlur=(image:any)=>{
+    const blurUrl = getMediaBlurUrl(image)
+    return !!blurUrl && blurUrl.length > 10 // Đảm bảo không phải chuỗi rỗng
+}
 export default function PropertyDetailClient({
     property,
     wardStats,
@@ -40,6 +43,9 @@ export default function PropertyDetailClient({
     const prevImage = () => {
         setCurrentImageIndex((prev) => (prev - 1 + (property.images?.length || 0)) % (property.images?.length || 0))
     }
+
+    const imageUrl = getMediaUrl(property.images?.[0]?.image) || '/placeholder.jpg'
+    const blurUrl = getMediaBlurUrl(property.images?.[0]?.image)
 
     return (
         <div className="min-h-screen bg-background">
@@ -81,7 +87,8 @@ export default function PropertyDetailClient({
                                                 src={getMediaUrl(property.images?.[currentImageIndex].image) || ""}
                                                 alt={property.title}
                                                 className="aspect-video w-full h-full object-cover"
-                                                blurDataURL={getMediaBlurUrl(property.images?.[currentImageIndex].image) || ""}
+                                                placeholder={hasBlur(property.images?.[currentImageIndex].image) ? 'blur' : undefined}
+                                                blurDataURL={hasBlur(property.images?.[currentImageIndex].image) ? getMediaBlurUrl(property.images?.[currentImageIndex].image) : ""}
                                             />
                                             {property.featured && (
                                                 <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
@@ -104,8 +111,8 @@ export default function PropertyDetailClient({
                                                 fill
                                                 className="object-contain"
                                                 priority
-                                                placeholder="blur"
-                                                blurDataURL={getMediaBlurUrl(property.images?.[currentImageIndex].image) || ""}
+                                                placeholder={hasBlur(property.images?.[currentImageIndex].image) ? 'blur' : undefined}
+                                                blurDataURL={hasBlur(property.images?.[currentImageIndex].image) ? getMediaBlurUrl(property.images?.[currentImageIndex].image) : ""}
                                             />
 
                                             {/* NÚT PREV */}
@@ -220,8 +227,8 @@ export default function PropertyDetailClient({
                                             height={300}
                                             src={getMediaUrl(img.image)}
                                             alt=""
-                                            placeholder="blur"
-                                            blurDataURL={getMediaBlurUrl(img.image) || ""}
+                                             placeholder={hasBlur(img.image) ? 'blur' : undefined}
+                                                blurDataURL={hasBlur(img.image) ? getMediaBlurUrl(img.image) : ""}
                                             className="w-full h-full object-cover"
                                         />
                                     </button>
@@ -284,8 +291,8 @@ export default function PropertyDetailClient({
                                     height={500}
                                     src={getMediaUrl(getValue(property.seller, 'avatar')) || '/default-avatar.png'}
                                     alt={getValue(property.seller, 'name')}
-                                    placeholder="blur"
-                                    blurDataURL={getMediaBlurUrl(getValue(property.seller, 'avatar')) || '/default-avatar.png'}
+                                    placeholder={hasBlur(getValue(property.seller, 'avatar')) ? 'blur' : undefined}
+                                    blurDataURL={hasBlur(getValue(property.seller, 'avatar')) ? getMediaBlurUrl(getValue(property.seller, 'avatar')) : ""}
                                     className="w-16 h-16 rounded-full object-cover"
                                 />
                                 <div>

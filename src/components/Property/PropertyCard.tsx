@@ -13,6 +13,11 @@ interface PropertyCardProps {
   variant?: "horizontal" | "vertical";
 }
 
+const hasBlur=(image:any)=>{
+    const blurUrl = getMediaBlurUrl(image)
+    return !!blurUrl && blurUrl.length > 10 // Đảm bảo không phải chuỗi rỗng
+}
+
 const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) => {
   const pricePerSqm = Math.round(property.price / property.area / 1000000);
   const getSellerInfo = (property: Property) => {
@@ -43,7 +48,8 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               width={500}
               height={500}
               priority
-              blurDataURL={getMediaBlurUrl(property.images?.[0].image) || ""}
+              placeholder={hasBlur(property.images?.[0].image) ? 'blur' : undefined}
+              blurDataURL={hasBlur(property.images?.[0].image) ? getMediaBlurUrl(property.images?.[0].image) : ""}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
             {property.featured && (

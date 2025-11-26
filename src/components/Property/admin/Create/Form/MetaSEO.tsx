@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,14 +18,14 @@ type MetaSEOProps = {
   property?: any
   setValue: any
   watch: any
+  onImageChange?: (image: any) => void
 }
 
-export default function MetaSEO({ property, setValue, watch }: MetaSEOProps) {
+export default function MetaSEO({ property, setValue, watch, onImageChange }: MetaSEOProps) {
   const [isOpen, setIsOpen] = useState(false)
-
-  const metaTitle = watch("meta.title") || property?.meta?.title || ""
-  const metaDescription = watch("meta.description") || property?.meta?.description || ""
-  const metaImage = watch("meta.image") || property?.meta?.image
+  const [metaImage, setMetaImage] = useState<any>(null)
+  const metaTitle = watch("metaTitle") || property?.meta?.title || ""
+  const metaDescription = watch("metaDescription") || property?.meta?.description || ""
 
   const handleUploadMetaImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -42,19 +42,29 @@ export default function MetaSEO({ property, setValue, watch }: MetaSEOProps) {
     }
 
     try {
-      const result = await uploadMedia(file)
-      if (result.success) {
-        setValue("meta.image", { id: result.id })
-        toast.success("Đã chọn ảnh SEO thành công")
+      const newImage={
+        id: file.name,
+        url: URL.createObjectURL(file),
+        file,
       }
+      setMetaImage(newImage)
     } catch (err) {
       toast.error("Upload ảnh thất bại")
     }
   }
 
+  useEffect(() => {
+    onImageChange?.(metaImage)
+  }, [metaImage])
+
+  useEffect(() => {
+    if (!property?.meta.image) return
+    setMetaImage(property.meta.image)
+  }, [property])
+
+
   const removeMetaImage = () => {
-    setValue("meta.image", null)
-    toast.success("Đã xóa ảnh SEO")
+    setMetaImage(null)
   }
 
   return (
@@ -81,9 +91,8 @@ export default function MetaSEO({ property, setValue, watch }: MetaSEOProps) {
               </Label>
               <Input
                 placeholder="Bán nhà 3 tầng 80m² Quận 7 - Full nội thất - Giá 4.5 tỷ"
-                maxLength={60}
                 defaultValue={property?.meta?.title}
-                onChange={(e) => setValue("meta.title", e.target.value)}
+                onChange={(e) => setValue("metaTitle", e.target.value)}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Nên chứa từ khóa chính, hấp dẫn, dưới 60 ký tự để hiển thị đầy đủ trên Google
@@ -102,9 +111,8 @@ export default function MetaSEO({ property, setValue, watch }: MetaSEOProps) {
                 rows={4}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
                 placeholder="Bán nhà phố 3 tầng, diện tích 80m² tại Quận 7, TP.HCM. Gần Phú Mỹ Hưng, pháp lý rõ ràng, sổ hồng riêng. Liên hệ ngay để xem nhà!"
-                maxLength={160}
                 defaultValue={property?.meta?.description}
-                onChange={(e) => setValue("meta.description", e.target.value)}
+                onChange={(e) => setValue("metaDescription", e.target.value)}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Hiển thị trên Google, nên hấp dẫn, có từ khóa, dưới 160 ký tự

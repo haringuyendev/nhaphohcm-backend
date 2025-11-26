@@ -68,6 +68,7 @@ export default async function PropertyDetailPage({ params }: Args) {
         overrideAccess: false,
     })
 
+
     if (!property) {
         throw new Error('Property not found')
     }
