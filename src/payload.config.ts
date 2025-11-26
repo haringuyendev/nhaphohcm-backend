@@ -30,13 +30,14 @@ import { ButtonBlock } from './blocks/ButtonBlock/config'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { AutoExpireProperties } from './tasks/autoExprireProperty'
+import { AutoSetExpireAt } from './tasks/autoSetExprireAt'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
@@ -88,8 +89,8 @@ export default buildConfig({
     },
   }),
   email: nodemailerAdapter({
-    defaultFromAddress: process.env.SMTP_SEND_USER||'info@blanca-city.com',
-    defaultFromName: process.env.SMTP_SEND_USER_NAME||'Blanca City',
+    defaultFromAddress: process.env.SMTP_SEND_USER || 'info@blanca-city.com',
+    defaultFromName: process.env.SMTP_SEND_USER_NAME || 'Blanca City',
     // Any Nodemailer transport can be used
     transport: nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -135,6 +136,24 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  jobs: {
+    tasks: [
+      AutoExpireProperties,
+      // AutoSetExpireAt
+    ],
+
+    // Auto-run: Chạy mỗi 5 phút (test), tự queue và process task
+    autoRun: [
+      {
+        queue: 'exprire_property',
+        cron: '* * * * *',
+      },
+      // {
+      //   queue: 'set_expire_at',
+      //   cron: '* * * * *',
+      // },
+    ],
   },
   // Sharp is now an optional dependency -
   // if you want to resize images, crop, set focal point, etc.
