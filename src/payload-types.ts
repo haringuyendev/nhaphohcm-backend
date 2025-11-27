@@ -123,7 +123,6 @@ export interface Config {
   jobs: {
     tasks: {
       autoExpireProperties: TaskAutoExpireProperties;
-      autoSetExpireAt: TaskAutoSetExpireAt;
       inline: {
         input: unknown;
         output: unknown;
@@ -856,7 +855,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'autoExpireProperties' | 'autoSetExpireAt';
+        taskSlug: 'inline' | 'autoExpireProperties';
         taskID: string;
         input?:
           | {
@@ -889,7 +888,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'autoExpireProperties' | 'autoSetExpireAt') | null;
+  taskSlug?: ('inline' | 'autoExpireProperties') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1635,14 +1634,6 @@ export interface PayloadJobsStatsSelect<T extends boolean = true> {
  * via the `definition` "TaskAutoExpireProperties".
  */
 export interface TaskAutoExpireProperties {
-  input?: unknown;
-  output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskAutoSetExpireAt".
- */
-export interface TaskAutoSetExpireAt {
   input?: unknown;
   output?: unknown;
 }

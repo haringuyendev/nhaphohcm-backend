@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Property } from "@/payload-types";
 import { RichText } from "../RichText";
-import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from "@/lib/utils";
+import { formatPrice, getDayAgo, getMediaBlurUrl, getMediaUrl, getValue } from "@/lib/utils";
 
 interface PropertyCardProps {
   property: Property;
@@ -17,6 +17,7 @@ const hasBlur=(image:any)=>{
     const blurUrl = getMediaBlurUrl(image)
     return !!blurUrl && blurUrl.length > 10 // Đảm bảo không phải chuỗi rỗng
 }
+
 
 const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) => {
   const pricePerSqm = Math.round(property.price / property.area / 1000000);
@@ -86,7 +87,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
             <span className="line-clamp-1">{getValue(property.district, 'name')}, {getValue(property.province, 'name')}</span>
           </div>
 
-          <p className="text-xs text-muted-foreground">Đăng hôm nay</p>
+          <p className="text-xs text-muted-foreground">{getDayAgo(property?.created_at as string)}</p>
         </div>
       </Card>
     );
@@ -206,7 +207,7 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
             />
             <div>
               <p className="font-medium text-sm text-foreground">{name}</p>
-              <p className="text-xs text-muted-foreground">Đăng hôm nay</p>
+              <p className="text-xs text-muted-foreground">Đăng {getDayAgo(property?.created_at as string)}</p>
             </div>
           </div>
           <Button size="sm" className="bg-primary hover:bg-primary/90">

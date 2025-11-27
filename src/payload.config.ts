@@ -31,7 +31,6 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { AutoExpireProperties } from './tasks/autoExprireProperty'
-import { AutoSetExpireAt } from './tasks/autoSetExprireAt'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

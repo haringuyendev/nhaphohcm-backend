@@ -46,3 +46,49 @@ export const formatPrice = (price: number): string => {
     return `${formatted} triệu`;
   }
 };
+export const getDayAgo = (date: string | null): string => {
+  if (!date) return 'Vừa xong'
+
+  const now = new Date()
+  const target = new Date(date)
+  
+  // Kiểm tra ngày không hợp lệ
+  if (isNaN(target.getTime())) return 'Không xác định'
+
+  const diffMs = now.getTime() - target.getTime()
+  const diffSeconds = Math.floor(diffMs / 1000)
+  const diffMinutes = Math.floor(diffSeconds / 60)
+  const diffHours = Math.floor(diffMinutes / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  // Dưới 1 phút
+  if (diffSeconds < 60) return 'Vừa xong'
+
+  // Dưới 1 giờ
+  if (diffMinutes < 60) return `${diffMinutes} phút trước`
+
+  // Hôm nay (cùng ngày)
+  if (diffDays === 0) {
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    return 'Hôm nay'
+  }
+
+  // Hôm qua
+  if (diffDays === 1) return 'Hôm qua'
+
+  // 2-6 ngày trước
+  if (diffDays < 7) return `${diffDays} ngày trước`
+
+  // 7-29 ngày trước
+  if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7)
+    return weeks === 1 ? 'Tuần trước' : `${weeks} tuần trước`
+  }
+
+  // Trên 30 ngày → trả về định dạng ngày tháng đẹp
+  return target.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: target.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+  })
+}
