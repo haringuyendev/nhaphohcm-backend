@@ -8,6 +8,8 @@ import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import { Media } from '@/payload-types'
+import { Reason } from '@/data/common'
+import NotFoundComponent from '@/components/Property/NotFound'
 
 type Args = {
   params: Promise<{
@@ -69,8 +71,14 @@ export default async function PropertyDetailPage({ params }: Args) {
     })
 
 
-    if (!property) {
-        throw new Error('Property not found')
+    if (!property || !property.docs || property.docs.length === 0) {
+        return notFound()
+    }
+    if(property?.docs?.[0]?.is_published === false) {
+        return <NotFoundComponent reason={Reason.EXPIRED} />
+    }
+    if(property?.docs?.[0]?.is_hidden === true) {
+        return <NotFoundComponent reason={Reason.HIDDEN} />
     }
 
     // Lấy danh sách phường trong quận
