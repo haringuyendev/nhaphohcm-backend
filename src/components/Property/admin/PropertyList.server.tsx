@@ -28,7 +28,7 @@ async function PropertyListContent({ status, currentPage, limit, user, search }:
 
   return (
     <div>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-0">
         <p className="text-muted-foreground mb-4">
           Hiển thị: <strong>{properties.length}</strong> / {pagination.total} tin
         </p>

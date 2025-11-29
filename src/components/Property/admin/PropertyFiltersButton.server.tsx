@@ -20,7 +20,7 @@ export default async function FilterButtons({ currentStatus, user }: FilterButto
   ]
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 px-2">
       {filters.map(({ key, label, count }) => (
         <Button
           key={key ?? 'all'}
