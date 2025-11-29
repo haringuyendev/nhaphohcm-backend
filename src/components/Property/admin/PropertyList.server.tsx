@@ -3,9 +3,9 @@ import { getPropertiesByStatus } from '@/endpoints/common/properties'
 import { Property } from '@/payload-types'
 import { Suspense } from 'react'
 // import PropertyListSkeleton from '../Skeleton/PropertyListSkeleton'
-import { PropertyPagination } from './PropertyListPagination'
 import PropertyCard from './PropertyCard.client'
 import PropertyAdminSkeleton from '@/components/Skeleton/PropertyAdminSkeleton'
+import { PropertyPagination } from '../Pagination'
 
 interface PropertyListServerProps {
   status?: 'published' | 'unpublished' | 'deleted' | 'expired' | 'expiring' | undefined

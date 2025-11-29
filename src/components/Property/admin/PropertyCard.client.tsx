@@ -17,7 +17,7 @@ import {
 } from '@/endpoints/common/properties'
 import { Upload, Download, Trash2, Undo2, Diamond, MoreVertical } from 'lucide-react'
 import { Property } from '@/payload-types'
-import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
+import { formatPrice, getDayAgo, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
 
 export default function PropertyCard({ property }: { property: Property }) {
   const [isPending, startTransition] = useTransition()
@@ -260,10 +260,49 @@ export default function PropertyCard({ property }: { property: Property }) {
             <p className="text-lg font-bold text-accent mb-1">
               {formatPrice(property.price)}
             </p>
+
             <div className="flex flex-wrap gap-2 text-sm text-muted-foreground mb-2">
               <span>{property.area} m²</span>
               {property.bedrooms && <span>• {property.bedrooms} PN</span>}
               {property.bathrooms && <span>• {property.bathrooms} PT</span>}
+            </div>
+            {/* === THÔNG TIN NGÀY THÁNG – SIÊU ĐẸP, SIÊU RÕ RÀNG === */}
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground my-2">
+              {/* Ngày đăng tin */}
+              <div className="flex items-center gap-1">
+                <span className="font-medium">Ngày đăng:</span>
+                <span>{new Date(property.created_at!).toLocaleDateString('vi-VN')}</span>
+              </div>
+
+              {/* Ngày đẩy tin gần nhất */}
+              {property.last_bumped_at && (
+                <div className="flex items-center gap-1">
+                  <Upload className="w-3 h-3 text-green-600" />
+                  <span>{new Date(property.last_bumped_at).toLocaleDateString('vi-VN')}</span>
+                </div>
+              )}
+
+              {/* Hết hạn VIP */}
+              {property.is_vip && property.vip_expire_at && (
+                <div className="flex items-center gap-1">
+                  <Diamond className="w-3 h-3 text-purple-600" />
+                  <span className="text-purple-700 font-medium">
+                    VIP đến: {new Date(property.vip_expire_at).toLocaleDateString('vi-VN')}
+                  </span>
+                </div>
+              )}
+
+              {/* Hết hạn tin */}
+              {property.expire_at && (
+                <div className="flex items-center gap-1">
+                  <span className={`font-medium`}>
+                    {isExpired ? 'Đã hết hạn:' : 'Ngày hết hạn:'}
+                  </span>
+                  {!isExpired&&<span className={isExpired ? 'text-red-600' : ''}>
+                      {new Date(property.expire_at).toLocaleDateString('vi-VN')}
+                    </span>}
+                </div>
+              )}
             </div>
             <p className="text-xs text-muted-foreground line-clamp-1">
               {[property.address, getValue(property.ward, 'name'), getValue(property.district, 'name'), getValue(property.province, 'name')]
@@ -320,6 +359,44 @@ export default function PropertyCard({ property }: { property: Property }) {
                 <span>· {property.area} m²</span>
                 {property.bedrooms && <span>· {property.bedrooms} PN</span>}
                 {property.bathrooms && <span>· {property.bathrooms} PT</span>}
+              </div>
+              {/* === THÔNG TIN NGÀY THÁNG – DESKTOP === */}
+              <div className="flex flex-wrap gap-4 text-xs text-muted-foreground my-3">
+                {/* Ngày đăng */}
+                <div className="flex items-center gap-1">
+                  <span className="font-medium">Ngày đăng:</span>
+                  <span>{new Date(property.created_at!).toLocaleDateString('vi-VN')}</span>
+                </div>
+
+                {/* Ngày đẩy tin */}
+                {property.last_bumped_at && (
+                  <div className="flex items-center gap-1">
+                    <Upload className="w-3.5 h-3.5 text-green-600" />
+                    <span>{new Date(property.last_bumped_at).toLocaleDateString('vi-VN')}</span>
+                  </div>
+                )}
+
+                {/* VIP */}
+                {property.is_vip && property.vip_expire_at && (
+                  <div className="flex items-center gap-1">
+                    <Diamond className="w-3.5 h-3.5 text-purple-600" />
+                    <span className="text-purple-700 font-medium">
+                      VIP đến: {new Date(property.vip_expire_at).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
+                )}
+
+                {/* Hết hạn tin */}
+                {property.expire_at && (
+                  <div className="flex items-center gap-1">
+                    <span className={`font-medium`}>
+                      {isExpired ? 'Đã hết hạn:' : 'Ngày hết hạn:'}
+                    </span>
+                    {!isExpired&&<span className={isExpired ? 'text-red-600' : ''}>
+                      {new Date(property.expire_at).toLocaleDateString('vi-VN')}
+                    </span>}
+                  </div>
+                )}
               </div>
               <p className="text-sm text-muted-foreground line-clamp-1">
                 {property.address},{' '}
