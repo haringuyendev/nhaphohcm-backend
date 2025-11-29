@@ -18,6 +18,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { generateUniqueSlug } from './hooks/generateUniqueSlug'
 import { autoSetExpireDate } from './hooks/autoSetExprireDate'
+import { autoAssignBumpedAt } from './hooks/autoAssignBumpedAt'
 
 // src/collections/Property/hooks/updateWardCount.ts
 const updateWardPropertyCount = async ({
@@ -340,6 +341,7 @@ export const Properties: CollectionConfig = {
       autoAssignSeller,
       generateUniqueSlug,
       autoSetExpireDate,
+      autoAssignBumpedAt,
     ],
   },
 }
