@@ -113,7 +113,8 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               width={500}
               height={500}
               priority
-              blurDataURL={getMediaBlurUrl(property.images?.[0].image) || ""}
+              placeholder={hasBlur(property.images?.[0].image) ? 'blur' : undefined}
+              blurDataURL={hasBlur(property.images?.[0].image) ? getMediaBlurUrl(property.images?.[0].image) : ""}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
             />
           </div>
@@ -131,7 +132,8 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
                   width={500}
                   height={500}
                   priority
-                  blurDataURL={getMediaBlurUrl(image.image) || ""}
+                  placeholder={hasBlur(image.image) ? 'blur' : undefined}
+                  blurDataURL={hasBlur(image.image) ? getMediaBlurUrl(image.image) : ""}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 {/* Show total count on last thumbnail */}
@@ -203,6 +205,8 @@ const PropertyCard = ({ property, variant = "horizontal" }: PropertyCardProps) =
               alt={name || "Avatar"}
               width={50}
               height={50}
+              placeholder={hasBlur(avatar) ? 'blur' : undefined}
+              blurDataURL={hasBlur(avatar) ? getMediaBlurUrl(avatar) : ""}
               className="w-9 h-9 rounded-full"
             />
             <div>
