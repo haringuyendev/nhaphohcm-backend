@@ -3,7 +3,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import PropertyDetail from '@/components/Property/PropertyDetail'
-import { getValue } from '@/lib/utils'
+import { getValue, lexicalToPlainText } from '@/lib/utils'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
@@ -23,36 +23,74 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
   if (!property) return notFound()
 
-  const gallery = property.images?.filter((item) => typeof item.image === 'object') || []
+  // 1. LẤY ẢNH CHO OG
+  const gallery = (property.images || [])
+    .map((item: any) => (typeof item.image === 'object' ? item.image : null))
+    .filter(Boolean) as any[]
 
-  const metaImage = typeof property.meta?.image === 'object' ? property.meta?.image : undefined
+  const metaImage = typeof property.meta?.image === 'object' ? property.meta.image : null
+  const seoImage = metaImage || gallery[0] || null
+
+  // 2. TẠO OPEN GRAPH IMAGES (chỉ khi có ảnh)
+  const ogImages = seoImage
+    ? [
+        {
+          url: seoImage.url,
+          width: seoImage.width ?? 1200,
+          height: seoImage.height ?? 630,
+          alt: seoImage.alt || property.title,
+        },
+      ]
+    : undefined
+
+  // 3. TITLE: Ưu tiên meta.title → fallback về title gốc
+  const pageTitle = property.meta?.title?.trim() || property.title
+
+  // 4. DESCRIPTION: Ưu tiên meta.description → fallback về Lexical JSON → text rút gọn 160 ký tự
+  let pageDescription = ''
+  if (property.meta?.description?.trim()) {
+    pageDescription = property.meta.description.trim()
+  } else if (property.description) {
+    const plainText = lexicalToPlainText(property.description)
+    pageDescription = plainText.length > 160
+      ? plainText.slice(0, 157) + '...'
+      : plainText || 'Xem chi tiết tin đăng bất động sản'
+  } else {
+    pageDescription = 'Xem chi tiết tin đăng bất động sản'
+  }
+
+  // 5. ROBOTS
   const canIndex = property.is_published === true
 
-  const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
-
   return {
-    description: property.meta?.description || '',
-    openGraph: seoImage?.url
+    title: pageTitle,
+    description: pageDescription,
+
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      images: ogImages,
+      type: 'website',
+      locale: 'vi_VN',
+    },
+
+    twitter: ogImages
       ? {
-          images: [
-            {
-              alt: seoImage?.alt,
-              height: seoImage.height!,
-              url: seoImage?.url,
-              width: seoImage.width!,
-            },
-          ],
+          card: 'summary_large_image',
+          title: pageTitle,
+          description: pageDescription,
+          images: ogImages,
         }
-      : null,
+      : undefined,
+
     robots: {
+      index: canIndex,
       follow: canIndex,
       googleBot: {
-        follow: canIndex,
         index: canIndex,
+        follow: canIndex,
       },
-      index: canIndex,
     },
-    title: property.meta?.title || property.title,
   }
 }
 

@@ -578,38 +578,41 @@ export async function getPropertyById(id: string) {
 // ==================== 2. CREATE PROPERTY ====================
 // src/endpoints/common/properties.ts
 
+// ==================== CREATE PROPERTY – META OPTIONAL ====================
 export const createProperty = async (data: any) => {
   const payload = await getPayload({ config: configPromise })
 
   try {
     const rawData = data instanceof FormData ? Object.fromEntries(data.entries()) : data
 
+    // XỬ LÝ ẢNH (giữ nguyên code đẹp của bạn)
     let imagesPayload: any[] = []
-
     if (rawData.images) {
       if (typeof rawData.images === 'string') {
-        try {
-          imagesPayload = JSON.parse(rawData.images)
-        } catch {
-          // nếu parse lỗi → coi như không có ảnh
-        }
+        try { imagesPayload = JSON.parse(rawData.images) } catch {}
       } else if (Array.isArray(rawData.images)) {
         imagesPayload = rawData.images
       }
     }
-    
-    // 4. Parse description
+
+    // Parse description
     let descriptionJson
     try {
-      descriptionJson =
-        typeof rawData.description === 'string'
-          ? JSON.parse(rawData.description)
-          : rawData.description
-    } catch (e) {
+      descriptionJson = typeof rawData.description === 'string'
+        ? JSON.parse(rawData.description)
+        : rawData.description
+    } catch {
       return { success: false, error: 'Mô tả không hợp lệ' }
     }
 
-    // 5. Dữ liệu gửi lên Payload
+    // CHỈ TẠO meta NẾU CÓ ÍT NHẤT 1 TRƯỜNG
+    const meta = {} as any
+    if (rawData.metaTitle?.trim()) meta.title = rawData.metaTitle.trim()
+    if (rawData.metaDescription?.trim()) meta.description = rawData.metaDescription.trim()
+    if (rawData.metaImage) meta.image = rawData.metaImage
+
+    const hasMeta = Object.keys(meta).length > 0
+
     const propertyData = {
       title: rawData.title as string,
       seller: rawData.seller as string,
@@ -621,22 +624,16 @@ export const createProperty = async (data: any) => {
       district: rawData.district,
       ward: rawData.ward || undefined,
       address: rawData.address as string,
-      images: imagesPayload, // ĐÚNG ĐỊNH DẠNG: có id + image.id → giữ thứ tự + liên kết
-      meta:{
-        title: rawData.metaTitle,
-        description: rawData.metaDescription,
-        image: rawData.metaImage
-      }
+      images: imagesPayload,
+      ...(hasMeta && { meta }), // CHỈ THÊM meta NẾU CÓ DỮ LIỆU
     }
 
-    // 6. Tạo tin
     const property = await payload.create({
       collection: 'properties',
       data: propertyData,
       draft: false,
     })
 
-    // Revalidate
     revalidatePath('/admin')
     revalidatePath('/')
 
@@ -650,73 +647,70 @@ export const createProperty = async (data: any) => {
   }
 }
 
-// ==================== 3. UPDATE PROPERTY (HOÀN HẢO 100%) ====================
+// ==================== UPDATE PROPERTY – META OPTIONAL ====================
 export async function updateProperty(id: string, formData: any) {
   const payload = await getPayload({ config: configPromise })
   try {
-    // 1. Đảm bảo luôn là plain object
     const rawData = formData instanceof FormData ? Object.fromEntries(formData.entries()) : formData
 
-    // 2. XỬ LÝ ẢNH – BÂY GIỜ LÀ MẢNG OBJECT { id?: string, mediaId: string }
+    // XỬ LÝ ẢNH
     const imagesFromClient = Array.isArray(rawData.images) ? rawData.images : []
-
     if (imagesFromClient.length === 0) {
       return { success: false, error: 'Vui lòng tải lên ít nhất 1 ảnh' }
     }
-    // 4. Parse description
-    let descriptionJson: any
-    try {
-      descriptionJson =
-        typeof rawData.description === 'string'
-          ? JSON.parse(rawData.description)
-          : rawData.description
-    } catch (e) {
-      return { success: false, error: 'Mô tả không hợp lệ' }
-    }
-    // 6. CHÌA KHÓA VÀNG: TẠO MẢNG ẢNH ĐÚNG ĐỊNH DẠNG PAYLOAD
+
     const finalImages = imagesFromClient.map((item: any) => {
-      const result: any = {
-        image: item.image || item.mediaId,
-      }
+      const result: any = { image: item.image?.id || item.image || item.mediaId }
       if (item.id && typeof item.id === 'string' && item.id.length > 10) {
         result.id = item.id
       }
       return result
     })
-    // console.log(JSON.stringify(rawData.description))
-    // 7. GỌI PAYLOAD UPDATE
-    const payloadData={
-        title: rawData.title,
-        description: rawData.description,
-        type: rawData.type,
-        price: Number(rawData.price),
-        area: Number(rawData.area),
-        province: rawData.province,
-        district: rawData.district,
-        ward: rawData.ward || undefined,
-        address: rawData.address,
-        images: finalImages,
-        meta:{
-          title: rawData.metaTitle,
-          description: rawData.metaDescription,
-          image: rawData.metaImage
-        }
-      }
+
+    // Parse description
+    let descriptionJson: any
+    try {
+      descriptionJson = typeof rawData.description === 'string'
+        ? JSON.parse(rawData.description)
+        : rawData.description
+    } catch {
+      return { success: false, error: 'Mô tả không hợp lệ' }
+    }
+
+    // TẠO meta CHỈ KHI CÓ DỮ LIỆU
+    const meta = {} as any
+    if (rawData.metaTitle?.trim()) meta.title = rawData.metaTitle.trim()
+    if (rawData.metaDescription?.trim()) meta.description = rawData.metaDescription.trim()
+    if (rawData.metaImage) meta.image = rawData.metaImage
+
+    const hasMeta = Object.keys(meta).length > 0
+
+    const payloadData = {
+      title: rawData.title,
+      description: descriptionJson,
+      type: rawData.type,
+      price: Number(rawData.price),
+      area: Number(rawData.area),
+      province: rawData.province,
+      district: rawData.district,
+      ward: rawData.ward || undefined,
+      address: rawData.address,
+      images: finalImages,
+      ...(hasMeta && { meta }), // CHỈ GỬI meta NẾU CÓ DỮ LIỆU
+    }
+
     const res = await payload.update({
       collection: 'properties',
       id: id,
       data: payloadData,
     })
-    // 8. Revalidate
+
     revalidatePath('/admin')
     revalidatePath(`/tin-dang/${id}`)
 
     return { success: true, message: 'Cập nhật tin thành công!' }
   } catch (error: any) {
-    console.log('🔥 PAYLOAD ERROR RAW:', error)
-    console.log('🔥 PAYLOAD ERROR DATA:', error.data)
-    console.log('🔥 PAYLOAD ERROR CAUSE:', error.cause)
-    console.log('🔥 PAYLOAD ERROR MESSAGE:', error.message)
+    console.error('Update property error:', error)
     throw error
   }
 }

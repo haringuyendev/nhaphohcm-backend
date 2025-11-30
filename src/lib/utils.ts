@@ -92,3 +92,23 @@ export const getDayAgo = (date: string | null): string => {
     year: target.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
   })
 }
+// utils/lexical-to-text.ts (tạo file này để dùng lại ở nhiều nơi)
+export const lexicalToPlainText = (lexicalValue: any): string => {
+  if (!lexicalValue || !lexicalValue.root?.children) return ''
+
+  const extractText = (nodes: any[]): string => {
+    return nodes
+      .map((node) => {
+        if (node.type === 'text') return node.text || ''
+        if (node.children && Array.isArray(node.children)) {
+          return extractText(node.children)
+        }
+        return ''
+      })
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
+  return extractText(lexicalValue.root.children)
+}

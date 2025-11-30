@@ -28,8 +28,8 @@ const propertySchema = z.object({
     type: z.string().nonempty(),
     area: z.number().positive("Diện tích phải lớn hơn 0"),
     price: z.number().positive("Giá phải lớn hơn 0"),
-    metaTitle:z.string(),
-    metaDescription:z.string(),
+    metaTitle:z.string().optional(),
+    metaDescription:z.string().optional(),
     metaImage:z.any().optional(),
 })
 
