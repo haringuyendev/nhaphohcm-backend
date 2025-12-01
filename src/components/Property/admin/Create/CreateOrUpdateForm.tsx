@@ -24,7 +24,7 @@ const propertySchema = z.object({
     province: z.string().min(1, "Vui lòng chọn tỉnh/thành phố"),
     district: z.string().min(1, "Vui lòng chọn quận/huyện"),
     ward: z.string().optional(),
-    address: z.string().min(5, "Địa chỉ cụ thể quá ngắn"),
+    address: z.string().min(1, "Địa chỉ cụ thể quá ngắn"),
     type: z.string().nonempty(),
     area: z.number().positive("Diện tích phải lớn hơn 0"),
     price: z.number().positive("Giá phải lớn hơn 0"),
