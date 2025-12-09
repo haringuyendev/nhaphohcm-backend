@@ -11,7 +11,7 @@ export async function getDistricts() {
       draft: false,
       limit: 0,
       overrideAccess: false,
-      select: { name: true, code: true },
+      select: { name: true, code: true, codename: true },
       sort: 'name',
     })
     return provinces.docs

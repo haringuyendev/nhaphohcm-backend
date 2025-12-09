@@ -6,6 +6,7 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { Page } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 import importExportPlugin from 'payload-plugin-import-export'
+import { websocketServerPlugin } from './websocketserver'
 
 const generateTitle: GenerateTitle<Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Ecommerce Template` : 'Payload Ecommerce Template'
@@ -55,7 +56,12 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    
   }),
+  // websocketServerPlugin({
+  //   collections: ['properties'],
+  //   port: 8000
+  // }),
   importExportPlugin({
     enabled: true,
     excludeCollections: ['users'],

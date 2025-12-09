@@ -1,273 +1,315 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Filter } from "lucide-react";
-import { areaRanges, priceRanges } from "@/lib/constants";
+import { Card } from "@/components/ui/card";
 import { MultiCombobox } from "@/components/ui/multi-select";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getProvinces } from "@/endpoints/common/provinces";
 import { getDistricts } from "@/endpoints/common/districts";
-import { getWards } from "@/endpoints/common/wards";
 import { getProperty_types } from "@/endpoints/common/properties";
-import { useTransition } from 'react';
+import { getWards } from "@/endpoints/common/wards";
+import { areaRanges, priceRanges } from "@/lib/constants";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 
-export default function Filters({setFilterOpen}: {setFilterOpen?: (open: boolean) => void}) {
-    const searchParams = useSearchParams();
+export default function Filters({
+    setFilterOpen,
+}: {
+    setFilterOpen?: (open: boolean) => void;
+}) {
     const router = useRouter();
-    const pathname = usePathname();
+    const pathname = usePathname(); // LẤY URL HIỆN TẠI
     const [isPending, startTransition] = useTransition();
 
-    const [districts, setDistricts] = useState<any>([]);
-    const [wards, setWards] = useState<any>([]);
-    const [property_types, setPropertyTypes] = useState<any>([]);
+    const [districts, setDistricts] = useState<any[]>([]);
+    const [wards, setWards] = useState<any[]>([]);
+    const [propertyTypes, setPropertyTypes] = useState<any[]>([]);
 
-    const [pendingFilters, setPendingFilters] = useState({
-        q: "",
-        p_types: [] as string[],
-        d: [] as number[],
-        w: [] as number[],
-        price_ranges: [] as string[],
-        area_ranges: [] as string[],
+    const [filters, setFilters] = useState({
+        property_type_slug: [] as string[],
+        district_slugs: [] as string[],
+        ward_slugs: [] as string[],
+        price_range_labels: [] as string[],
+        area_range_labels: [] as string[],
     });
 
-    const fetchDistricts = async () => {
-        const districts = await getDistricts()
-        setDistricts(districts)
-    }
-    const fetchWards = async () => {
-        const wards = await getWards({ district_code: pendingFilters.d })
-        setWards(wards)
-    }
-
-    const fetchProperties = async () => {
-        const properties = await getProperty_types()
-        setPropertyTypes(properties)
-    }
+    // Load data
     useEffect(() => {
-        fetchDistricts()
-        fetchProperties()
+        Promise.all([getDistricts(), getProperty_types()]).then(([d, p]) => {
+            setDistricts(d);
+            setPropertyTypes(p);
+        });
     }, []);
 
+    // useEffect ĐỌC URL → HỖ TRỢ MULTI-SELECT (dấu phẩy)
     useEffect(() => {
-        fetchWards()
-    }, [pendingFilters.d]);
+        if (!pathname || pathname === "/") {
+            setFilters({
+                property_type_slug: [],
+                district_slugs: [],
+                ward_slugs: [],
+                price_range_labels: [],
+                area_range_labels: [],
+            });
+            return;
+        }
 
-        
-    
+        const segments = pathname.split("/").filter(Boolean);
 
-    useEffect(() => {
-        const priceMin = Number(searchParams.get("price_min"));
-        const priceMax = Number(searchParams.get("price_max"));
-        const areaMin = Number(searchParams.get("area_min"));
-        const areaMax = Number(searchParams.get("area_max"));
-        const search = searchParams.get("search");
-        const p_types = searchParams.get("p_types");
-        const d = searchParams.get("d");
-        const w = searchParams.get("w");
+        let property_type_slug = [""];
+        const district_slugs: string[] = [];
+        const ward_slugs: string[] = [];
+        const price_range_labels: string[] = [];
+        const area_range_labels: string[] = [];
 
-        // ✅ tìm range theo min-max
-        const matchedPriceRanges = priceRanges
-            .filter(
-                (p) =>
-                    (p.min === priceMin) ||
-                    (p.max === priceMax) ||
-                    (p.min === priceMin && p.max === priceMax)
-            )
-            .map((p) => p.label);
+        for (const seg of segments) {
+            const s = seg.toLowerCase();
 
-        const matchedAreaRanges = areaRanges
-            .filter(
-                (a) =>
-                    (a.min === areaMin) ||
-                    (a.max === areaMax) ||
-                    (a.min === areaMin && a.max === areaMax)
-            )
-            .map((a) => a.label);
+            if (s.startsWith("mua-ban-")) {
+                // eslint-disable-next-line prefer-const
+                let cleaned = s.replace("mua-ban-", "");
 
-        setPendingFilters({
-            q: search || "",
-            p_types: p_types?.split(",") || [],
-            d: d?.split(",").map(Number) || [],
-            w: w?.split(",").map(Number) || [],
-            price_ranges: matchedPriceRanges,
-            area_ranges: matchedAreaRanges,
+                // Tách phần loại + vị trí
+                const parts = cleaned.split("-tai-");
+
+                // LOẠI
+                const propertyTypeSlug = parts[0].split('+'); // ví dụ: can-ho-dich-vu
+                if(propertyTypeSlug.includes('bat-dong-san')) property_type_slug = [""];
+                else property_type_slug = propertyTypeSlug;
+
+                // VỊ TRÍ (tùy chọn)
+                if (parts.length > 1) {
+                    const location = parts[1]; // quan-10-phuong-13
+                    const locParts = location.split("-");
+
+                    for (let i = 0; i < locParts.length; i++) {
+                        const p = locParts[i];
+
+                        // Quận
+                        if (p === "quan" && locParts[i + 1]) {
+                            district_slugs.push("quan_" + locParts[i + 1]);
+                        }
+                        // Phường
+                        if (p === "phuong" && locParts[i + 1]) {
+                            ward_slugs.push("phuong_" + locParts[i + 1]);
+                        }
+                    }
+                }
+                continue;
+            }
+
+            const priceMatch = s.match(/gia-tu-(\d+)-(\d+)-ty|gia-tren-(\d+)-ty/);
+            if (priceMatch) {
+                const [_, from, to, above] = priceMatch;
+
+                if (above) {
+                    const label = `Trên ${above} tỷ`;
+                    const found = priceRanges.find(p => p.label === label);
+                    if (found) price_range_labels.push(found.label);
+                } else {
+                    const label = `${from} - ${to} tỷ`;
+                    const found = priceRanges.find(p => p.label.includes(from) && p.label.includes(to));
+                    if (found) price_range_labels.push(found.label);
+                }
+                continue;
+            }
+
+            const areaMatch = s.match(/dien-tich-tu-(\d+)-(\d+)-m2|dien-tich-tren-(\d+)-m2/);
+            if (areaMatch) {
+                const [_, from, to, above] = areaMatch;
+
+                if (above) {
+                    const label = `Trên ${above}m²`;
+                    const found = areaRanges.find(a => a.label === label);
+                    if (found) area_range_labels.push(found.label);
+                } else {
+                    const label = `${from}-${to}m²`;
+                    const found = areaRanges.find(a => a.label === label);
+                    if (found) area_range_labels.push(found.label);
+                }
+            }
+        }
+
+        setFilters({
+            property_type_slug,
+            district_slugs,
+            ward_slugs,
+            price_range_labels,
+            area_range_labels,
         });
-    }, [searchParams]);
+    }, [pathname]);
 
-    const handleChange = (key: keyof typeof pendingFilters, values: any) => {
-        setPendingFilters((prev) => ({ ...prev, [key]: values }));
+    // Load phường khi chọn quận
+    useEffect(() => {
+        if (filters.district_slugs.length > 0 && districts.length > 0) {
+            getWards({ district_slug: filters.district_slugs }).then(setWards);
+        } else {
+            setWards([]);
+        }
+    }, [filters.district_slugs, districts]);
+
+    const update = (key: keyof typeof filters, value: any) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
+    };
+    console.log(filters, districts, wards);
+    const generateUrl = () => {
+        const parts: string[] = [];
+
+        // 1. Loại BĐS — nếu không chọn thì mặc định "nha-dat"
+        const baseType = filters.property_type_slug.length>0
+            ? filters.property_type_slug.join("+")
+            : "bat-dong-san";
+
+        const base = `mua-ban-${baseType}`;
+
+        // 2. PHƯỜNG đứng trước QUẬN
+        let locationPart = "";
+
+        const wards = filters.ward_slugs.map(s => s.replace("phuong_", ""));
+        const districts = filters.district_slugs.map(s => s.replace("quan_", ""));
+
+        if (wards.length > 0) {
+            // Có phường
+            locationPart =
+                "tai-" +
+                wards.map(w => `phuong-${w}`).join("-") +
+                (districts.length > 0 ? "-" + districts.map(d => `quan-${d}`).join("-") : "");
+        } else {
+            // Không có phường → chỉ có quận
+            if (districts.length > 0) {
+                locationPart = "tai-" + districts.map(d => `quan-${d}`).join("-");
+            }
+        }
+
+        // GHÉP LOẠI + POSITION
+        const combined = [base, locationPart].filter(Boolean).join("-");
+        if (combined) parts.push(combined);
+
+        // 3. Giá
+        if (filters.price_range_labels.length > 0) {
+            const selected = filters.price_range_labels
+                .map(l => priceRanges.find(p => p.label === l))
+                .filter(Boolean);
+
+            if (selected.length > 0) {
+                const min = Math.min(...selected.map(p => p!.min / 1e9));
+                const maxVals = selected.map(p => p!.max).filter((v): v is number => v != null);
+                const max = maxVals.length > 0 ? Math.max(...maxVals.map(v => v / 1e9)) : Infinity;
+
+                if (max === Infinity) {
+                    parts.push(`gia-tren-${min}-ty`);
+                } else {
+                    parts.push(`gia-tu-${min}-${max}-ty`);
+                }
+            }
+        }
+
+        // 4. Diện tích
+        if (filters.area_range_labels.length > 0) {
+            const selected = filters.area_range_labels
+                .map(l => areaRanges.find(a => a.label === l))
+                .filter(Boolean);
+
+            if (selected.length > 0) {
+                const min = Math.min(...selected.map(a => a!.min!));
+                const maxVals = selected.map(a => a!.max).filter((v): v is number => v != null);
+                const max = maxVals.length > 0 ? Math.max(...maxVals) : Infinity;
+
+                if (max === Infinity) {
+                    parts.push(`dien-tich-tren-${min}-m2`);
+                } else {
+                    parts.push(`dien-tich-tu-${min}-${max}-m2`);
+                }
+            }
+        }
+
+        return "/" + parts.join("/");
     };
 
     const handleApply = () => {
-        const params = new URLSearchParams();
-
-        if (pendingFilters.q.trim()) params.set("search", pendingFilters.q.trim());
-        if (pendingFilters.p_types.length)
-            params.set("p_types", pendingFilters.p_types.join(","));
-        if (pendingFilters.d.length) params.set("d", pendingFilters.d.join(","));
-        if (pendingFilters.w.length) params.set("w", pendingFilters.w.join(","));
-
-        // 🎯 Khoảng giá
-        if (pendingFilters.price_ranges.length > 0) {
-            const selected = pendingFilters.price_ranges
-                .map((label) => priceRanges.find((p) => p.label === label))
-                .filter(Boolean);
-            const min = Math.min(
-                ...selected.map((p) => p?.min ?? 0).filter((v) => v !== null)
-            );
-            const maxValues = selected.map((p) => p?.max).filter((v) => v !== null);
-            const max = maxValues.length ? Math.max(...(maxValues as number[])) : null;
-
-            if (!isNaN(min) && min > 0) params.set("price_min", String(min));
-            if (max !== null && !isNaN(max)) params.set("price_max", String(max));
-        }
-
-        // 🎯 Khoảng diện tích
-        if (pendingFilters.area_ranges.length > 0) {
-            const selected = pendingFilters.area_ranges
-                .map((label) => areaRanges.find((a) => a.label === label))
-                .filter(Boolean);
-            const min = Math.min(
-                ...selected.map((a) => a?.min ?? 0).filter((v) => v !== null)
-            );
-            const maxValues = selected.map((a) => a?.max).filter((v) => v !== null);
-            const max = maxValues.length ? Math.max(...(maxValues as number[])) : null;
-
-            if (!isNaN(min) && min > 0) params.set("area_min", String(min));
-            if (max !== null && !isNaN(max)) params.set("area_max", String(max));
-        }
-        const newUrl = `${pathname}?${params.toString()}`;
+        const url = generateUrl();
         startTransition(() => {
-            router.push(newUrl, { scroll: false });
-            // router.refresh() is often unnecessary here as router.push triggers a re-render
+            router.push(url, { scroll: false });
         });
-        if (setFilterOpen) {
-            setFilterOpen(false);
-        }
+        setFilterOpen?.(false);
     };
 
     const handleReset = () => {
-        setPendingFilters({
-            q: "",
-            p_types: [],
-            d: [],
-            w: [],
-            price_ranges: [],
-            area_ranges: [],
+        setFilters({
+            property_type_slug: [],
+            district_slugs: [],
+            ward_slugs: [],
+            price_range_labels: [],
+            area_range_labels: [],
         });
-        const newUrl = pathname;
-
-        // ✅ Bọc trong startTransition
         startTransition(() => {
-            router.push(newUrl, { scroll: false });
-            router.refresh();
+            router.push("/");
         });
-        if (setFilterOpen) {
-            setFilterOpen(false);
-        }
+        setFilterOpen?.(false);
     };
 
     return (
         <Card className="p-4 space-y-6">
             <h3 className="font-semibold text-lg">Tìm kiếm theo nhu cầu</h3>
 
-            {/* ===================== TÌM KIẾM ===================== */}
-            <div className="lg:hidden block">
-                <label className="text-sm font-medium block">Tìm kiếm</label>
-                <Input
-                    placeholder="Tìm kiếm..."
-                    value={pendingFilters.q}
-                    onChange={(e) => handleChange("q", e.target.value)}
-                />
-            </div>
-
-            {/* ===================== LOẠI BẤT ĐỘNG SẢN ===================== */}
             <div>
                 <label className="text-sm font-medium block">Loại bất động sản</label>
                 <MultiCombobox
-                    placeholder="Chọn loại bất động sản"
-                    className="w-full"
-                    options={property_types.map((p: any) => ({
-                        value: p.value,
-                        label: p.label,
-                    }))}
-                    value={pendingFilters.p_types}
-                    onChange={(values) => handleChange("p_types", values)}
+                    placeholder="Chọn loại"
+                    options={propertyTypes.map(p => ({ value: p.value, label: p.label }))}
+                    value={filters.property_type_slug}
+                    onChange={(v) => update("property_type_slug", v)}
                 />
             </div>
 
-            {/* ===================== QUẬN HUYỆN ===================== */}
             <div>
                 <label className="text-sm font-medium block">Quận huyện</label>
                 <MultiCombobox
-                    placeholder="Chọn quận huyện"
-                    className="w-full"
-                    options={districts.map((d: any) => ({
-                        value: d.code,
-                        label: d.name,
-                    }))}
-                    value={pendingFilters.d}
-                    onChange={(values) => handleChange("d", values)}
+                    placeholder="Chọn quận"
+                    options={districts.map(d => ({ value: d.codename, label: d.name }))}
+                    value={filters.district_slugs}
+                    onChange={(v) => update("district_slugs", v)}
                 />
             </div>
 
-            {/* ===================== PHƯỜNG XA ===================== */}
             <div>
                 <label className="text-sm font-medium block">Phường xã</label>
                 <MultiCombobox
-                    disabled={pendingFilters.d.length === 0}
-                    placeholder="Chọn phường xã"
-                    className="w-full"
-                    options={wards.map((w: any) => ({
-                        value: w.code,
-                        label: w.name + " - " + w.district.name,
+                    disabled={filters.district_slugs.length === 0}
+                    placeholder="Chọn phường"
+                    options={wards.map(w => ({
+                        value: w.codename,
+                        label: `${w.name} - ${districts.find(d => d.code === w.district.code)?.name || ""}`,
                     }))}
-                    value={pendingFilters.w}
-                    onChange={(values) => handleChange("w", values)}
+                    value={filters.ward_slugs}
+                    onChange={(v) => update("ward_slugs", v)}
                 />
             </div>
 
-            {/* ===================== GIÁ ===================== */}
+            {/* Giá + diện tích giữ nguyên */}
             <div>
                 <label className="text-sm font-medium block">Khoảng giá</label>
                 <MultiCombobox
-                    placeholder="Chọn khoảng giá"
-                    className="w-full"
-                    options={priceRanges.map((p) => ({
-                        value: p.label,
-                        label: p.label,
-                    }))}
-                    value={pendingFilters.price_ranges}
-                    onChange={(values) => handleChange("price_ranges", values)}
+                    placeholder="Chọn giá"
+                    options={priceRanges.map(p => ({ value: p.label, label: p.label }))}
+                    value={filters.price_range_labels}
+                    onChange={(v) => update("price_range_labels", v)}
                 />
             </div>
 
-            {/* ===================== DIỆN TÍCH ===================== */}
             <div>
                 <label className="text-sm font-medium block">Diện tích</label>
                 <MultiCombobox
-                    placeholder="Chọn khoảng diện tích"
-                    className="w-full"
-                    options={areaRanges.map((a) => ({
-                        value: a.label,
-                        label: a.label,
-                    }))}
-                    value={pendingFilters.area_ranges}
-                    onChange={(values) => handleChange("area_ranges", values)}
+                    placeholder="Chọn diện tích"
+                    options={areaRanges.map(a => ({ value: a.label, label: a.label }))}
+                    value={filters.area_range_labels}
+                    onChange={(v) => update("area_range_labels", v)}
                 />
             </div>
 
-            {/* ===================== ACTION ===================== */}
-            <div className="flex gap-2 items-center">
-                <Button onClick={handleApply} disabled={isPending}>
-                    {isPending ? 'Đang áp dụng...' : 'Áp dụng bộ lọc'}
+            <div className="flex gap-2">
+                <Button onClick={handleApply} disabled={isPending} className="flex-1">
+                    Tìm kiếm
                 </Button>
-                <Button variant="outline" onClick={handleReset}>
-                    Xóa bộ lọc
-                </Button>
+                <Button variant="outline" onClick={handleReset}>Xóa</Button>
             </div>
         </Card>
     );

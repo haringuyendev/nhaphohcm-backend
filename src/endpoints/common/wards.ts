@@ -3,7 +3,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
-export async function getWards({ district_code }: { district_code: number[] }) {
+export async function getWards({ district_slug }: { district_slug: string[] }) {
   const payload = await getPayload({ config: configPromise })
 
   try {
@@ -15,11 +15,12 @@ export async function getWards({ district_code }: { district_code: number[] }) {
       select: {
         name: true,
         code: true,
-        district:true
+        district:true,
+        codename:true
       },
       where: {
-        'district.code': {
-          in: district_code,
+        'district.codename': {
+          in: district_slug,
         },
       },
       sort: 'name',
@@ -32,7 +33,7 @@ export async function getWards({ district_code }: { district_code: number[] }) {
   }
 }
 
-export async function getWardsByDistrictId({ district_code }: { district_code: number }) {
+export async function getWardsByDistrictSlug({ district_slug }: { district_slug: string }) {
   const payload = await getPayload({ config: configPromise })
 
   try {
@@ -42,14 +43,15 @@ export async function getWardsByDistrictId({ district_code }: { district_code: n
       overrideAccess: false,
       limit:0,
       where:{
-        "district.code":{
-          equals:district_code
+        "district.codename":{
+          equals:district_slug
         }
       },
       select: {
         name: true,
         code: true,
-        district:true
+        district:true,
+        codename:true
       },
       sort: 'name',
     })

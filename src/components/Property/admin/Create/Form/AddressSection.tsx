@@ -56,7 +56,7 @@ function AddressSection({
 
     const provinces = useProvinces()
     const districts = useDistricts(Number(location.province))
-    const wards = useWards(Number(location.district))
+    const wards = useWards(location.district)
 
     // Load ảnh cũ khi edit
     useEffect(() => {

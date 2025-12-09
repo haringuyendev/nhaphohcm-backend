@@ -1,12 +1,12 @@
-import { getWardsByDistrictId } from "@/endpoints/common/wards"
+import { getWardsByDistrictSlug } from "@/endpoints/common/wards"
 import { useEffect, useState } from "react"
 
-export const useWards = (districtId: number) => {
+export const useWards = (districtId: string) => {
     const [wards, setWards] = useState<any[]>([])
     useEffect(() => {
-        if (!districtId || isNaN(districtId)) return
+        if (!districtId) return
         const loadWards = async () => {
-            const result = await getWardsByDistrictId({ district_code: districtId })
+            const result = await getWardsByDistrictSlug({ district_slug: districtId })
             if (result) {
                 const opts = result.map(p => ({
                     value: String(p.code),  // ép string ngay từ đầu

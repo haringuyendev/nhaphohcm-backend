@@ -14,6 +14,7 @@ interface PropertyListServerProps {
 }
 async function PropertyListContent({ filters, limit, currentPage }: PropertyListServerProps) {
 
+    console.log(filters);
     const propertiesData = await getProperties({
         ...filters,
         limit: limit.toString(),
