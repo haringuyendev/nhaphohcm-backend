@@ -1,21 +1,21 @@
 // app/admin/post-property/[id]/page.tsx hoặc components/PostProperty.tsx
 'use client'
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
+import { uploadMedia } from "@/endpoints/media"
+import { createProperty, updateProperty } from "@/endpoints/properties"
+import { User } from "@/payload-types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { uploadMedia } from "@/endpoints/common/media"
-import { createProperty, updateProperty } from "@/endpoints/common/properties"
-import { User } from "@/payload-types"
-import { useRouter } from "next/navigation"
-import MetaSEO from "./Form/MetaSEO"
-import ContentSection from "./Form/ContentSection"
-import InfoSection from "./Form/InfoSection"
-import DemandSection from "./Form/DemandSection"
 import AddressSection from "./Form/AddressSection"
+import ContentSection from "./Form/ContentSection"
+import DemandSection from "./Form/DemandSection"
+import InfoSection from "./Form/InfoSection"
+import MetaSEO from "./Form/MetaSEO"
 
 
 const propertySchema = z.object({

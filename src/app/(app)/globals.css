@@ -27,6 +27,14 @@
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), sans-serif;
   --font-be-vietnam: var(--font-be-vietnam), sans-serif;
+  --message-sent: hsl(214 100% 50%);
+  --message-sent-foreground: hsl(0 0% 100%);
+  --message-received: hsl(220 14% 93%);
+  --message-received-foreground: hsl(220 13% 13%);
+  --sidebar-bg: hsl(0 0% 100%);
+  --chat-bg: hsl(220 14% 98%);
+  --online: hsl(142 71% 45%);
+  --typing: hsl(220 9% 60%);
 }
 
 @utility container {
@@ -91,6 +99,16 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     --sidebar: hsl(0 0% 98%);
+
+    /* Messenger specific tokens */
+    --message-sent: hsl(214 100% 50%);
+    --message-sent-foreground: hsl(0 0% 100%);
+    --message-received: hsl(220 14% 93%);
+    --message-received-foreground: hsl(220 13% 13%);
+    --sidebar-bg: hsl(0 0% 100%);
+    --chat-bg: hsl(220 14% 98%);
+    --online: hsl(142 71% 45%);
+    --typing: hsl(220 9% 60%);
   }
 
   .dark {
@@ -131,6 +149,15 @@
     --sidebar-border: hsl(240 3.7% 15.9%);
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
     --sidebar: hsl(240 5.9% 10%);
+
+     --message-sent: hsl(214 100% 55%);
+    --message-sent-foreground: hsl(0 0% 100%);
+    --message-received: hsl(220 13% 20%);
+    --message-received-foreground: hsl(220 14% 96%);
+    --sidebar-bg: hsl(220 13% 13%);
+    --chat-bg: hsl(220 13% 10%);
+    --online: hsl(142 71% 45%);
+    --typing: hsl(220 9% 50%);
   }
 
 @theme inline {

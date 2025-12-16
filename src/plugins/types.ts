@@ -1,16 +1,6 @@
 import { Media, Property as PayloadProperty } from '@/payload-types'
 
 /**
- * WebSocket configuration constants
- */
-export const WS_CONFIG = {
-  URL: 'ws://localhost:8000',
-  MAX_RETRIES: 5,
-  RETRY_DELAY: 2000, // 2 seconds
-} as const
-
-/**
- * Message types for WebSocket communication
  */
 export const MESSAGE_TYPES = {
   FETCH_COLLECTION: 'FETCH_COLLECTION',
@@ -37,8 +27,10 @@ export type { PayloadProperty as Property }
 export type WSMessage = {
   type: string
   collection: string
-  operation: 'create' | 'update' | 'delete'
+  operation: 'create' | 'update' | 'delete' | 'get'
   doc: PayloadProperty
+  userId?: string
+  conversationId?: string
 }
 
 export type ConnectionStatus = (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS]

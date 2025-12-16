@@ -1,71 +1,175 @@
-import { useEffect, useRef, useState } from 'react'
-import { WS_CONFIG, CONNECTION_STATUS, type ConnectionStatus } from '@/plugins/types'
-import { initPayload } from '@/app/actions/initPayload'
+// hooks/useWebSocket.ts (replace existing)
+'use client'
 
-type UseWebSocketProps<T> = {
-  collection: string
-  onMessage: (data: T) => void
+import { User } from '@/payload-types'
+import { useAuth } from '@/providers/Auth'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { io, Socket } from 'socket.io-client'
+
+export type WSStatus = 'connecting' | 'connected' | 'disconnected' | 'error' | 'failed'
+
+export const MESSAGE_TYPES = {
+  FETCH_COLLECTION: 'FETCH_COLLECTION',
+  COLLECTION_DATA: 'COLLECTION_DATA',
+  COLLECTION_CHANGED: 'COLLECTION_CHANGED',
+} as const
+
+export type CollectionConfig = {
+  col: string
+  limit?: number
+  sort?: any
+  select?: any
+  where?: any
+  depth?: number
 }
 
-export function useWebSocket<T>({ collection, onMessage }: UseWebSocketProps<T>) {
-  const [status, setStatus] = useState<ConnectionStatus>(CONNECTION_STATUS.CONNECTING)
-  const wsRef = useRef<WebSocket | null>(null)
+type UseWebSocketOpts = {
+  url?: string
+  path?: string
+  transports?: ('websocket' | 'polling')[]
+}
+
+export function useWebSocket(
+  onEvent: (event: string, payload: any) => void,
+  configs: CollectionConfig[] = [], // chỉ làm template, không auto-fetch nữa
+  opts: UseWebSocketOpts = {},
+) {
+  const socketRef = useRef<Socket | null>(null)
+  const onEventRef = useRef(onEvent)
+  const { user } = useAuth()
+  const [status, setStatus] = useState<WSStatus>('disconnected')
+  const [data, setData] = useState<Record<string, any[]>>({})
+  const requestedRef = useRef<Record<string, CollectionConfig>>({})
+
+  // index configs for quick lookup
+  const configsIndexRef = useRef<Record<string, CollectionConfig>>({})
+  useEffect(() => {
+    const idx: Record<string, CollectionConfig> = {}
+    for (const c of configs) {
+      if (c?.col) idx[c.col] = c
+    }
+    configsIndexRef.current = idx
+  }, [configs])
 
   useEffect(() => {
-    let retryCount = 0
+    onEventRef.current = onEvent
+  }, [onEvent])
 
-    const connectWebSocket = async () => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) return
+  const handleCollectionData = useCallback((payload: any) => {
+    const collection = payload?.collection
+    const docs = payload?.docs ?? []
 
-      try {
-        // Initialize Payload if needed
-        await initPayload()
+    if (!collection) return
 
-        wsRef.current = new WebSocket(WS_CONFIG.URL)
+    setData((prev) => ({ ...prev, [collection]: docs }))
+  }, [])
 
-        wsRef.current.onopen = () => {
-          setTimeout(() => {
-            wsRef.current?.send(
-              JSON.stringify({
-                type: 'FETCH_COLLECTION',
-                collection,
-              }),
-            )
-          }, 30)
-          setStatus(CONNECTION_STATUS.CONNECTED)
-          retryCount = 0
-        }
+  const handleCollectionChanged = useCallback((msg: any) => {
+    const col = msg.collection
+    if (!col) return
+    setData((prev) => {
+      const arr = prev[col] ?? []
+      const idx = arr.findIndex((i) => i.id === msg.doc.id)
 
-        wsRef.current.onmessage = (event) => {
-          const message = JSON.parse(event.data)
-          onMessage(message)
-        }
-
-        wsRef.current.onclose = () => {
-          setStatus(CONNECTION_STATUS.DISCONNECTED)
-
-          if (retryCount < WS_CONFIG.MAX_RETRIES) {
-            retryCount++
-            setTimeout(connectWebSocket, WS_CONFIG.RETRY_DELAY)
+      switch (msg.operation) {
+        case 'create':
+          if (idx !== -1) return prev
+          return { ...prev, [col]: [...arr, msg.doc] }
+        case 'update':
+          if (idx !== -1) {
+            const next = [...arr]
+            next[idx] = msg.doc
+            return { ...prev, [col]: next }
           } else {
-            setStatus(CONNECTION_STATUS.FAILED)
+            return { ...prev, [col]: [...arr, msg.doc] }
           }
-        }
-      } catch (error) {
-        console.error('WebSocket error:', error)
-        setStatus(CONNECTION_STATUS.ERROR)
+        case 'delete':
+          return { ...prev, [col]: arr.filter((i) => i.id !== msg.doc.id) }
+        default:
+          return prev
       }
+    })
+  }, [])
+
+  /**
+   * fetchCollection API (manual)
+   * - collection: tên collection (required)
+   * - overrides: partial config (ví dụ where, limit, sort...) sẽ merge trên template configs nếu có
+   */
+  const fetchCollection = useCallback((collection: string, overrides?: Partial<CollectionConfig>) => {
+    const socket = socketRef.current
+    if (!socket?.connected) {
+      console.warn('[ws] socket not connected - skip fetchCollection for', collection)
+      return
+    }
+    if (!collection) {
+      console.warn('[ws] fetchCollection missing collection name', collection)
+      return
     }
 
-    connectWebSocket()
+    // lấy template nếu có
+    const base = configsIndexRef.current[collection] ?? { col: collection }
+
+    // merge: overrides có ưu tiên
+    const finalCfg: CollectionConfig = {
+      ...base,
+      ...overrides,
+      col: collection,
+    }
+
+    // remember last requested config (useful for reconnect)
+    requestedRef.current[collection] = finalCfg
+
+    console.debug('[ws] emitting FETCH_COLLECTION', finalCfg)
+    socket.emit(MESSAGE_TYPES.FETCH_COLLECTION, finalCfg)
+  }, [])
+
+  // init WS (NOTE: NO auto-fetch of configs here)
+  useEffect(() => {
+    if (!user) return
+
+    const socket = io(opts.url ?? 'http://localhost:3001', {
+      path: opts.path ?? '/socket.io',
+      transports: opts.transports ?? ['websocket'],
+      withCredentials: true,
+    })
+
+    socketRef.current = socket
+    setStatus('connecting')
+
+    socket.on('connect', () => {
+      setStatus('connected')
+      if (user?.id) socket.emit('JOIN_USER', user.id)
+
+      // If you want automatic re-fetch of previously requested collections after reconnect:
+      // for (const c of Object.values(requestedRef.current)) socket.emit(MESSAGE_TYPES.FETCH_COLLECTION, c)
+    })
+
+    socket.on('disconnect', () => setStatus('disconnected'))
+    socket.on('connect_error', () => setStatus('error'))
+    socket.on('reconnect_failed', () => setStatus('failed'))
+
+    socket.onAny((event, payload) => {
+      // forward raw event
+      try { onEventRef.current?.(event, payload) } catch (e) { console.error(e) }
+
+      if (event === MESSAGE_TYPES.COLLECTION_DATA) handleCollectionData(payload)
+      else if (event === MESSAGE_TYPES.COLLECTION_CHANGED) handleCollectionChanged(payload)
+    })
 
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close()
-        wsRef.current = null
-      }
+      try { socket.disconnect() } catch (e) {}
+      socketRef.current = null
+      setStatus('disconnected')
+      // don't clear requestedRef to allow reconnect-based re-fetch if desired
     }
-  }, [collection, onMessage])
+  }, [user, opts.url, opts.path, opts.transports, handleCollectionData, handleCollectionChanged])
 
-  return { status }
+  return {
+    socket: socketRef.current,
+    status,
+    data,
+    fetchCollection,
+    user,
+  }
 }

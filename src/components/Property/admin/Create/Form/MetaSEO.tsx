@@ -1,18 +1,17 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Upload, ChevronDown, ChevronUp, Sparkles } from "lucide-react"
-import { toast } from "sonner"
-import { uploadMedia } from "@/endpoints/common/media"
+import { ChevronDown, ChevronUp, Sparkles, Upload } from "lucide-react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 type MetaSEOProps = {
   property?: any

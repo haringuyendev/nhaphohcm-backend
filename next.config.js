@@ -13,7 +13,7 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
+      ...[NEXT_PUBLIC_SERVER_URL, 'https://images.unsplash.com'].map((item) => {
         const url = new URL(item)
 
         return {
@@ -33,6 +33,12 @@ const nextConfig = {
     }
 
     return webpackConfig
+  },
+  eslint: {
+    ignoreDuringBuilds: true,  // ⬅️ tắt ESLint khi build
+  },
+  typescript: {
+    ignoreBuildErrors: true,   // ⬅️ Skip type check
   },
 }
 

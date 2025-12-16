@@ -1,6 +1,6 @@
 // PropertyList.server.tsx
 import PropertyCard from "@/components/Property/PropertyCard";
-import { getProperties } from "@/endpoints/common/properties";
+import { getProperties } from "@/endpoints/properties";
 import { Property } from "@/payload-types";
 import { MapPin } from "lucide-react";
 import { Suspense } from "react";
@@ -14,7 +14,6 @@ interface PropertyListServerProps {
 }
 async function PropertyListContent({ filters, limit, currentPage }: PropertyListServerProps) {
 
-    console.log(filters);
     const propertiesData = await getProperties({
         ...filters,
         limit: limit.toString(),

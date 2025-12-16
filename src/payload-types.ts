@@ -77,6 +77,13 @@ export interface Config {
     wards: Ward;
     properties: Property;
     property_type: PropertyType;
+    conversations: Conversation;
+    messages: Message;
+    communities: Community;
+    members: Member;
+    socialPosts: SocialPost;
+    comments: Comment;
+    postLikes: PostLike;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-kv': PayloadKv;
@@ -95,6 +102,13 @@ export interface Config {
     wards: WardsSelect<false> | WardsSelect<true>;
     properties: PropertiesSelect<false> | PropertiesSelect<true>;
     property_type: PropertyTypeSelect<false> | PropertyTypeSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
+    communities: CommunitiesSelect<false> | CommunitiesSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    socialPosts: SocialPostsSelect<false> | SocialPostsSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
+    postLikes: PostLikesSelect<false> | PostLikesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -211,6 +225,7 @@ export interface User {
   roles: ('admin' | 'editor')[];
   phone: string;
   avatar?: (string | null) | Media;
+  expoPushToken?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -771,6 +786,141 @@ export interface PropertyType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: string;
+  title?: string | null;
+  isGroup?: boolean | null;
+  participantsKey?: string | null;
+  participants?: (string | User)[] | null;
+  lastMessage?: (string | null) | Message;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: string;
+  conversation: string | Conversation;
+  sender: string | User;
+  text?: string | null;
+  attachments?: (string | Media)[] | null;
+  isReadBy?: (string | User)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "communities".
+ */
+export interface Community {
+  id: string;
+  name: string;
+  /**
+   * Chỉ dùng chữ thường, số và dấu gạch ngang (-)
+   */
+  slug: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  cover?: (string | null) | Media;
+  avatar?: (string | null) | Media;
+  owner: string | User;
+  memberCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: string;
+  community: string | Community;
+  user: string | User;
+  role?: ('member' | 'moderator' | 'admin') | null;
+  status?: ('active' | 'banned' | 'pending') | null;
+  joinedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "socialPosts".
+ */
+export interface SocialPost {
+  id: string;
+  title: string;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  community: string | Community;
+  author: string | User;
+  attachments?:
+    | {
+        file?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  isHidden?: boolean | null;
+  likeCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: string;
+  post: string | SocialPost;
+  author: string | User;
+  text: string;
+  parentComment?: (string | null) | Comment;
+  isHidden?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "postLikes".
+ */
+export interface PostLike {
+  id: string;
+  post: string | SocialPost;
+  user: string | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -944,6 +1094,34 @@ export interface PayloadLockedDocument {
         value: string | PropertyType;
       } | null)
     | ({
+        relationTo: 'conversations';
+        value: string | Conversation;
+      } | null)
+    | ({
+        relationTo: 'messages';
+        value: string | Message;
+      } | null)
+    | ({
+        relationTo: 'communities';
+        value: string | Community;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: string | Member;
+      } | null)
+    | ({
+        relationTo: 'socialPosts';
+        value: string | SocialPost;
+      } | null)
+    | ({
+        relationTo: 'comments';
+        value: string | Comment;
+      } | null)
+    | ({
+        relationTo: 'postLikes';
+        value: string | PostLike;
+      } | null)
+    | ({
         relationTo: 'forms';
         value: string | Form;
       } | null)
@@ -1002,6 +1180,7 @@ export interface UsersSelect<T extends boolean = true> {
   roles?: T;
   phone?: T;
   avatar?: T;
+  expoPushToken?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1279,6 +1458,103 @@ export interface PropertyTypeSelect<T extends boolean = true> {
   description?: T;
   icon?: T;
   is_active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  title?: T;
+  isGroup?: T;
+  participantsKey?: T;
+  participants?: T;
+  lastMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  conversation?: T;
+  sender?: T;
+  text?: T;
+  attachments?: T;
+  isReadBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "communities_select".
+ */
+export interface CommunitiesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  cover?: T;
+  avatar?: T;
+  owner?: T;
+  memberCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  community?: T;
+  user?: T;
+  role?: T;
+  status?: T;
+  joinedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "socialPosts_select".
+ */
+export interface SocialPostsSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
+  community?: T;
+  author?: T;
+  attachments?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  isHidden?: T;
+  likeCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  post?: T;
+  author?: T;
+  text?: T;
+  parentComment?: T;
+  isHidden?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "postLikes_select".
+ */
+export interface PostLikesSelect<T extends boolean = true> {
+  post?: T;
+  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }

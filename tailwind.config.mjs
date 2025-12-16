@@ -1,6 +1,10 @@
-const plugin = require('tailwindcss/plugin')
+// tailwind.config.js (ESM)
+import plugin from 'tailwindcss/plugin'
+import containerQueries from '@tailwindcss/container-queries'
+import typography from '@tailwindcss/typography'
+
 /** @type {import('tailwindcss').Config} */
-export default {
+const config = {
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -49,43 +53,50 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        label: 'hsl(var(--label))',
+        label: 'var(--label)',
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
         },
-        background: 'hsl(var(--background))',
-        border: 'hsl(var(--border))',
+        background: 'var(--background)',
+        border: 'var(--border)',
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
         },
-        foreground: 'hsl(var(--foreground))',
-        input: 'hsl(var(--input))',
+        foreground: 'var(--foreground)',
+        input: 'var(--input)',
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
         },
-        ring: 'hsl(var(--ring))',
+        ring: 'var(--ring)',
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
         },
-        success: 'hsl(var(--success))',
-        error: 'hsl(var(--error))',
-        warning: 'hsl(var(--warning))',
+        success: 'var(--success)',
+        error: 'var(--error)',
+        warning: 'var(--warning)',
+        "message-sent":"var(--message-sent)",
+        "message-sent-foreground": "var(--message-sent-foreground)",
+        "message-received": "var(--message-received)",
+        "message-received-foreground": "var(--message-received-foreground)",
+        online: "var(--online)",
+        typing: "var(--typing)",
+        "chat-bg": "var(--chat-bg)"
       },
       typography: ({ theme }) => ({
         DEFAULT: {
@@ -156,7 +167,7 @@ export default {
         blink: {
           '0%': { opacity: 0.2 },
           '20%': { opacity: 1 },
-          '100% ': { opacity: 0.2 },
+          '100%': { opacity: 0.2 },
         },
       },
       animation: {
@@ -179,8 +190,8 @@ export default {
     hoverOnlyWhenSupported: true,
   },
   plugins: [
-    require('@tailwindcss/container-queries'),
-    require('@tailwindcss/typography'),
+    containerQueries,
+    typography,
     plugin(({ matchUtilities, theme }) => {
       matchUtilities(
         {
@@ -197,3 +208,5 @@ export default {
     }),
   ],
 }
+
+export default config

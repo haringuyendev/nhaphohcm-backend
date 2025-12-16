@@ -58,10 +58,10 @@ export const plugins: Plugin[] = [
     },
     
   }),
-  // websocketServerPlugin({
-  //   collections: ['properties'],
-  //   port: 8000
-  // }),
+  websocketServerPlugin({
+    collections: ['conversations', 'messages'],
+    port: 3001
+  }),
   importExportPlugin({
     enabled: true,
     excludeCollections: ['users'],

@@ -1,13 +1,10 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect, useState } from 'react'
 
 import type { Page } from '@/payload-types'
 
-import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@payloadcms/ui'
 import { RichText } from '@/components/RichText'
 import { getMediaBlurUrl } from '@/lib/utils'
 

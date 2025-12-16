@@ -1,23 +1,22 @@
 'use client'
 
-import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { toast } from 'sonner'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useIsMobile } from '@/hooks/use-mobile'
 import {
   bumpProperty,
   restoreProperty,
   softDeleteProperty,
   togglePublish,
   updateVipStatus,
-} from '@/endpoints/common/properties'
-import { Upload, Download, Trash2, Undo2, Diamond, MoreVertical } from 'lucide-react'
+} from '@/endpoints/properties'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { formatPrice, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
 import { Property } from '@/payload-types'
-import { formatPrice, getDayAgo, getMediaBlurUrl, getMediaUrl, getValue } from '@/lib/utils'
+import { Diamond, Download, Trash2, Undo2, Upload } from 'lucide-react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import { toast } from 'sonner'
 
 export default function PropertyCard({ property }: { property: Property }) {
   const [isPending, startTransition] = useTransition()

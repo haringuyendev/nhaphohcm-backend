@@ -1,4 +1,4 @@
-import { getDistrictsByProvince } from "@/endpoints/common/districts"
+import { getDistrictsByProvince } from "@/endpoints/districts"
 import { useEffect, useState } from "react"
 
 export const useDistricts = (provinceId: number) => {

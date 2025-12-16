@@ -1,4 +1,4 @@
-import { getProperty_types } from "@/endpoints/common/properties"
+import { getProperty_types } from "@/endpoints/properties"
 import { useEffect, useState } from "react"
 
 export const usePropertyTypes = () => {

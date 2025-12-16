@@ -55,7 +55,7 @@ export const Users: CollectionConfig = {
     {
       name: 'roles',
       type: 'select',
-      required:true,
+      required: true,
       access: {
         create: adminOnlyFieldAccess,
         read: adminOnlyFieldAccess,
@@ -78,14 +78,63 @@ export const Users: CollectionConfig = {
       ],
     },
     {
-      name:'phone',
-      type:'text',
-      required:true,
+      name: 'phone',
+      type: 'text',
+      required: true,
     },
     {
-      name:'avatar',
-      type:'upload',
-      relationTo:'media',
-    }
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'media',
+      maxDepth: 2,
+    },
+    {
+      name: 'expoPushToken',
+      type: 'text',
+      required: false,
+    },
+  ],
+  endpoints: [
+    {
+      path: '/push-token',
+      method: 'post',
+      handler: async (req) => {
+        try {
+          if(!req)
+            return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
+          // Lấy user từ JWT
+          const user = req.user
+          if (!user?.id) {
+            return Response.json({ error: 'Unauthorized' }, { status: 401 })
+          }
+          let data;
+          try {
+            data = await req.json?.();
+          } catch (e) {
+            return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+          }
+          const { expoPushToken } = data ?? {};
+          if (!expoPushToken) {
+            return Response.json({ error: 'Missing expoPushToken' }, { status: 400 })
+          }
+
+          // Cập nhật vào user
+          const updated = await req.payload.update({
+            collection: 'users',
+            id: user.id,
+            data: { expoPushToken },
+          })
+
+          return Response.json({
+            success: true,
+            expoPushToken: updated.expoPushToken,
+            message: 'Device token updated successfully',
+          })
+        } catch (err) {
+          console.error(err)
+          return Response.json({ error: 'Server error' }, { status: 500 })
+        }
+      },
+    },
   ],
 }

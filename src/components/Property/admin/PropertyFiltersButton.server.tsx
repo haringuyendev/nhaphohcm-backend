@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { getPropertyStats } from '@/endpoints/common/properties'
+import { getPropertyStats } from '@/endpoints/properties'
 import Link from 'next/link'
 
 interface FilterButtonsProps {

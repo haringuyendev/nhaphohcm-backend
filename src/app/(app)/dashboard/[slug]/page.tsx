@@ -1,12 +1,12 @@
 // app/admin/post-property/[id]/page.tsx
-import { headers as getHeaders } from 'next/headers'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { redirect } from 'next/navigation'
 import PostProperty from '@/components/Property/admin/Create/CreateOrUpdateForm'
-import { getPropertyById } from '@/endpoints/common/properties'
-import { Metadata } from 'next'
+import { getPropertyById } from '@/endpoints/properties'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import configPromise from '@payload-config'
+import { Metadata } from 'next'
+import { headers as getHeaders } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { getPayload } from 'payload'
 
 type Args = {
     params: Promise<{

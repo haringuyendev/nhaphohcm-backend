@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import { ArrowLeft, Bed, Bath, Square, MapPin, Phone, Share2, Heart, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Bed, Bath, Square, MapPin, Phone, Share2, Heart, ChevronLeft, ChevronRight, MessagesSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import PropertyCard from './PropertyCard'
@@ -310,6 +310,14 @@ export default function PropertyDetailClient({
                                     >
                                         <Phone className="w-4 h-4 mr-2" />
                                         {getValue(property.seller, 'phone')}
+                                    </Button>
+                                    <Button
+                                        className="w-full mb-2"
+                                        size="lg"
+                                        onClick={() => router.push(`/conversations?to=${getValue(property.seller, 'id')}`)}
+                                    >
+                                        <MessagesSquare className="w-4 h-4 mr-2" />
+                                        Gửi tin nhắn
                                     </Button>
                                     <Button
                                         variant="outline"

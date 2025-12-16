@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Building2, Lock, Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { resetPasswordAction } from "@/endpoints/user"
+import { Building2, CheckCircle2, Eye, EyeOff, Loader2, Lock } from "lucide-react"
 import Link from "next/link"
-import { resetPasswordAction } from "@/endpoints/common/user"
+import { useRouter } from "next/navigation"
+import { useState, useTransition } from "react"
+import { toast } from "sonner"
 
 const ResetPassword = ({ token }: { token: string }) => {
   const router = useRouter()

@@ -31,6 +31,13 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { AutoExpireProperties } from './tasks/autoExprireProperty'
+import { Conversations } from './collections/Conversations'
+import { Messages } from './collections/Messages'
+import { Communities } from './collections/Communities'
+import { Members } from './collections/Members'
+import { SocialPosts } from './collections/SocialPost'
+import { Comments } from './collections/Comments'
+import { PostLikes } from './collections/PostLikes'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -47,7 +54,23 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Pages, Media, Provinces, Districts, Wards, Properties, PropertyTypes],
+  collections: [
+    Users,
+    Pages,
+    Media,
+    Provinces,
+    Districts,
+    Wards,
+    Properties,
+    PropertyTypes,
+    Conversations,
+    Messages,
+    Communities,
+    Members,
+    SocialPosts,
+    Comments,
+    PostLikes,
+  ],
   blocks: [ButtonBlock],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
@@ -136,6 +159,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
+  defaultDepth: 10,
   jobs: {
     tasks: [
       AutoExpireProperties,
@@ -154,6 +178,13 @@ export default buildConfig({
       // },
     ],
   },
+  cors: [
+    'http://localhost:3000', // FE local
+    'http://localhost:8081', // Nếu bạn có FE khác
+    'http://192.168.1.11:8081'
+  ],
+
+  csrf: ['http://localhost:3000', 'http://localhost:8081', 'http://192.168.1.11:8081'],
   // Sharp is now an optional dependency -
   // if you want to resize images, crop, set focal point, etc.
   // make sure to install it and pass it to the config.

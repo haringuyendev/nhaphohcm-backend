@@ -1,21 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import {
-  bumpProperty,
-  restoreProperty,
-  softDeleteProperty,
-  togglePublish,
-  updateVipStatus,
-} from '@/endpoints/common/properties'
-import { Upload, Download, Trash2, Undo2, Diamond, Plus } from 'lucide-react'
-import Link from 'next/link'
-import FilterButtons from './PropertyFiltersButton.server'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AdminSidebar } from './AdminSidebar'
+import { useTransition } from 'react'
+import { toast } from 'sonner'
 
 interface Property {
   id: string

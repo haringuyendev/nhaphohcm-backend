@@ -1,118 +1,89 @@
-// src/plugins/websocketServer.ts
-import { Plugin, CollectionSlug } from 'payload'
-import ws, { WebSocketServer } from 'ws'
+import http from 'http'
 import type { Config } from 'payload'
+import { Server as IOServer } from 'socket.io'
+import { MESSAGE_TYPES } from './types'
 
-/**
- * Configuration options for the WebSocket plugin
- */
 interface PluginTypes {
-  /** Port number for the WebSocket server. Defaults to 8081 */
   port?: number
-  /** Array of collection slugs to watch for changes */
   collections?: string[]
 }
-/** Global WebSocket server instance */
-let wss: WebSocketServer
+
+let io: IOServer
 
 export const websocketServerPlugin =
   (pluginOptions: PluginTypes = {}) =>
   (incomingConfig: Config): Config => {
-    // eslint-disable-next-line prefer-const
-    let config = { ...incomingConfig }
+    const config = { ...incomingConfig }
 
-    if (pluginOptions.collections) {
-      config.collections = (config.collections || []).map((collection) => {
-        if (!pluginOptions.collections?.includes(collection.slug)) return collection
+    const WS_PORT = pluginOptions.port ?? 8081
 
-        return {
-          ...collection,
-          hooks: {
-            ...collection.hooks,
-            /**
-             * Hook that runs after a document is deleted
-             * Broadcasts the deletion to all connected WebSocket clients
-             */
-            afterDelete: [
-              async ({ doc }) => {
-                if (wss) {
-                  const message = JSON.stringify({
-                    type: 'COLLECTION_CHANGED',
-                    collection: collection.slug,
-                    operation: 'delete',
-                    doc,
-                  })
-                  wss.clients.forEach((client) => {
-                    if (client.readyState === ws.OPEN) {
-                      client.send(message)
-                    }
-                  })
-                }
-              },
-            ],
-            /**
-             * Hook that runs after a document is changed (created/updated)
-             * Broadcasts the change to all connected WebSocket clients
-             */
-            afterChange: [
-              async ({ doc, operation, req }) => {
-                if (wss) {
-                  const populatedDoc = await req.payload.find({
-                    collection: collection.slug as CollectionSlug,
-                    where: {
-                      id: { equals: doc.id },
-                    },
-                    depth: 2,
-                  })
-
-                  const message = JSON.stringify({
-                    type: 'COLLECTION_CHANGED',
-                    collection: collection.slug,
-                    operation,
-                    doc: populatedDoc.docs[0],
-                  })
-
-                  wss.clients.forEach((client) => {
-                    if (client.readyState === ws.OPEN) {
-                      client.send(message)
-                    }
-                  })
-                }
-                return doc
-              },
-            ],
-          },
-        }
-      })
-    }
-
-    /**
-     * Initializes the WebSocket server when Payload starts
-     * Sets up message handling for collection data requests
-     */
+    // Start Socket.IO server
     config.onInit = async (payload) => {
-      if (incomingConfig.onInit) await incomingConfig.onInit(payload)
+      if (incomingConfig.onInit) {
+        await incomingConfig.onInit(payload)
+      }
 
-      wss = new WebSocketServer({ port: pluginOptions.port || 8081 })
+      // Start dedicated HTTP server for socket.io
+      const server = http.createServer()
+      io = new IOServer(server, {
+        cors: { origin: 'http://localhost:3000', credentials: true },
+        path: '/socket.io',
+      })
 
-      wss.on('connection', (ws) => {
-        ws.on('message', async (message) => {
+      server.listen(WS_PORT, () => {
+        console.log(`🔥 Socket.IO server is running on port ${WS_PORT}`)
+      })
+
+      payload.io = io
+
+      io.on('connection', (socket) => {
+        console.log('Client connected:', socket.id)
+
+        socket.on(MESSAGE_TYPES.FETCH_COLLECTION, async (config) => {
           try {
-            const data = JSON.parse(message.toString())
+            const {
+              col, // tên collection
+              limit = 20,
+              sort,
+              select,
+              where,
+              depth = 4, // default 4 vì bạn cần populate avatar
+            } = config ?? {}
 
-            switch (data.type) {
-              case 'FETCH_COLLECTION':
-                const results = await payload.find({
-                  collection: data.collection,
-                  depth: 2,
-                  limit: data.limit || 10,
-                })
-                ws.send(JSON.stringify({ type: 'COLLECTION_DATA', data: results }))
-                break
+            if (!col) {
+              console.warn("FETCH_COLLECTION missing 'col'. Received:", config)
+              return
             }
-          } catch (error) {
-            console.error('WebSocket error:', error)
+
+            const results = await payload.find({
+              collection: col,
+              limit,
+              sort,
+              select,
+              where,
+              depth,
+            })
+
+            console.log(`📤 SEND COLLECTION_DATA for: ${col} (${results.docs.length} docs)`)
+
+            socket.emit(MESSAGE_TYPES.COLLECTION_DATA, {
+              collection: col,
+              docs: results.docs,
+            })
+          } catch (err) {
+            console.error('❌ FETCH_COLLECTION error:', err)
+            socket.emit(MESSAGE_TYPES.COLLECTION_DATA, {
+              collection: config?.col,
+              docs: [],
+              error: true,
+            })
           }
+        })
+
+        socket.on('JOIN_USER', (userId) => {
+          if (!userId) return
+          socket.join(`user_${userId}`)
+          console.log(`👤 Socket ${socket.id} joined user_${userId}`)
         })
       })
     }

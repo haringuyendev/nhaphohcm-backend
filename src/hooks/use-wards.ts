@@ -1,4 +1,4 @@
-import { getWardsByDistrictSlug } from "@/endpoints/common/wards"
+import { getWardsByDistrictSlug } from "@/endpoints/wards"
 import { useEffect, useState } from "react"
 
 export const useWards = (districtId: string) => {

@@ -1,4 +1,4 @@
-import { getProvinces } from '@/endpoints/common/provinces'
+import { getProvinces } from '@/endpoints/provinces'
 import { useEffect, useState } from 'react'
 
 export const useProvinces = () => {

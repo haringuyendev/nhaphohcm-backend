@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MultiCombobox } from "@/components/ui/multi-select";
-import { getDistricts } from "@/endpoints/common/districts";
-import { getProperty_types } from "@/endpoints/common/properties";
-import { getWards } from "@/endpoints/common/wards";
+import { getDistricts } from "@/endpoints/districts";
+import { getProperty_types } from "@/endpoints/properties";
+import { getWards } from "@/endpoints/wards";
 import { areaRanges, priceRanges } from "@/lib/constants";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -149,7 +149,6 @@ export default function Filters({
     const update = (key: keyof typeof filters, value: any) => {
         setFilters(prev => ({ ...prev, [key]: value }));
     };
-    console.log(filters, districts, wards);
     const generateUrl = () => {
         const parts: string[] = [];
 

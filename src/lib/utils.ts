@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { parseISO, isValid, format } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -111,4 +112,24 @@ export const lexicalToPlainText = (lexicalValue: any): string => {
   }
 
   return extractText(lexicalValue.root.children)
+}
+
+export function safeFormatTime(raw: any, fmt = 'HH:mm') {
+  if (!raw) return '';
+  // nếu là object Firestore-style { seconds } convert về Date
+  if (typeof raw === 'object' && raw !== null && ('seconds' in raw || '_seconds' in raw)) {
+    const secs = raw.seconds ?? raw._seconds;
+    const d = new Date(secs * 1000);
+    return isValid(d) ? format(d, fmt) : '';
+  }
+
+  // nếu là string -> parseISO (an toàn hơn new Date on strings)
+  if (typeof raw === 'string') {
+    const d = parseISO(raw);
+    return isValid(d) ? format(d, fmt) : '';
+  }
+
+  // nếu là number hoặc Date-like
+  const d = raw instanceof Date ? raw : new Date(raw);
+  return isValid(d) ? format(d, fmt) : '';
 }

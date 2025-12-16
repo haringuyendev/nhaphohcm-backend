@@ -123,10 +123,8 @@ async function parseSegments(segments: string[]) {
       let cleaned = s.replace("mua-ban-", "");
 
       const parts = cleaned.split("-tai-");
-      console.log(parts);
       // === PROPERTY TYPES (multi bằng dấu +) ===
       const propertyTypeSlug = parts[0].split("%2b");
-      console.log(propertyTypeSlug);
       if (!propertyTypeSlug.includes("bat-dong-san")) {
         filters.property_type_slug = propertyTypeSlug;
 

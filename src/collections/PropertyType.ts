@@ -3,6 +3,7 @@ import { adminOnly } from '@/access/adminOnly'
 
 export const PropertyTypes: CollectionConfig = {
   slug: 'property_type',
+  labels: { singular: 'Loại bất động sản', plural: 'Các loại bất động sản' },
   admin: {
     useAsTitle: 'label',
     defaultColumns: ['label', 'slug', 'is_active'],
