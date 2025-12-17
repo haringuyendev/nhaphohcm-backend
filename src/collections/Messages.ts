@@ -80,6 +80,8 @@ export const Messages: CollectionConfig = {
 
           // Cập nhật lastMessage trên conversation nếu message mới hoặc text/attachment thay đổi
           // (Bạn có thể kiểm tra previousDoc để chỉ cập nhật khi cần)
+          const conv=(message.conversation as any).id ?? message.conversation
+          console.log('Conversation ID:', conv);
           await req.payload.update({
             collection: 'conversations',
             id: (message.conversation as any).id ?? message.conversation,
