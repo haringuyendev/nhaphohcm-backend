@@ -93,6 +93,16 @@ export const Users: CollectionConfig = {
       type: 'text',
       required: false,
     },
+    {
+      name: 'favoriteProperties',
+      label: 'Tin yêu thích',
+      type: 'relationship',
+      relationTo: 'properties',
+      hasMany: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
   ],
   endpoints: [
     {
@@ -100,20 +110,19 @@ export const Users: CollectionConfig = {
       method: 'post',
       handler: async (req) => {
         try {
-          if(!req)
-            return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
+          if (!req) return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
           // Lấy user từ JWT
           const user = req.user
           if (!user?.id) {
             return Response.json({ error: 'Unauthorized' }, { status: 401 })
           }
-          let data;
+          let data
           try {
-            data = await req.json?.();
+            data = await req.json?.()
           } catch (e) {
-            return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+            return Response.json({ error: 'Invalid JSON' }, { status: 400 })
           }
-          const { expoPushToken } = data ?? {};
+          const { expoPushToken } = data ?? {}
           if (!expoPushToken) {
             return Response.json({ error: 'Missing expoPushToken' }, { status: 400 })
           }
@@ -129,6 +138,48 @@ export const Users: CollectionConfig = {
             success: true,
             expoPushToken: updated.expoPushToken,
             message: 'Device token updated successfully',
+          })
+        } catch (err) {
+          console.error(err)
+          return Response.json({ error: 'Server error' }, { status: 500 })
+        }
+      },
+    },
+    {
+      path: '/toggle-favorite',
+      method: 'post',
+      handler: async (req) => {
+        try {
+          if (!req) return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
+          const user = req.user
+          if (!user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+          
+          const { propertyId } = await req.json?.()
+          if (!propertyId) return Response.json({ error: 'Missing propertyId' }, { status: 400 })
+
+          const payload = req.payload
+
+          // Lấy user hiện tại
+          const current = await payload.findByID({
+            collection: 'users',
+            id: user.id,
+          })
+          const currentFavoritePropertiesID = current.favoriteProperties?.map((p: any) => p.id) || [];
+          const currentFavoriteProperties = current.favoriteProperties?.filter((p: any) => p.id !== propertyId.toString());
+          const alreadySaved = currentFavoritePropertiesID.includes(propertyId.toString());
+
+          const updated = await payload.update({
+            collection: 'users',
+            id: user.id,
+            data: {
+              favoriteProperties: alreadySaved ? currentFavoriteProperties : [...(current?.favoriteProperties || []), propertyId],
+            },
+          })
+
+          return Response.json({
+            success: true,
+            isFavorite: !alreadySaved,
+            favoriteProperties: updated.favoriteProperties ?? [],
           })
         } catch (err) {
           console.error(err)
