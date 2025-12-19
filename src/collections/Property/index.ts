@@ -335,7 +335,37 @@ export const Properties: CollectionConfig = {
     },
     // 🏷️ Thông tin cơ bản
   ],
+  endpoints: [
+    {
+      path: '/similar/:id',
+      method: 'get',
+      handler: async (req: any) => {
+        const { id } = req.routeParams || req.params; 
+        if (!id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        const current = await req.payload.findByID({
+          collection: 'properties',
+          id,
+        });
 
+        const similar = await req.payload.find({
+          collection: 'properties',
+          where: {
+            and: [
+              { id: { not_equals: id } },
+              { type: { equals: current.type } },
+              { province: { equals: current.province } }, // hoặc district nếu chi tiết hơn
+              // { status: { equals: 'published' } },
+            ],
+          },
+          limit: 10,
+          depth: 2,
+          sort: '-createdAt',
+        });
+        console.log('Similar properties:', similar);
+        return Response.json({ docs: similar.docs });
+      },
+    },
+  ],
   hooks: {
     beforeChange: [
       autoAssignSeller,
