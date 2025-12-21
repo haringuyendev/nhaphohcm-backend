@@ -187,5 +187,80 @@ export const Users: CollectionConfig = {
         }
       },
     },
+    {
+      path: '/my-stats',
+      method: 'get',
+      handler: async (req: any) => {
+        if (!req) return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
+          const user = req.user
+          if (!user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        const now = new Date().toISOString();
+
+      const baseWhere = { seller: { equals: user.id } };
+
+      const [totalRes, publishedRes, hiddenRes, expiredRes, vipRes] = await Promise.all([
+        // Tổng tất cả tin của user
+        req.payload.count({
+          collection: 'properties',
+          where: baseWhere,
+          limit: 0,
+        }),
+
+        // Đang published
+        req.payload.count({
+          collection: 'properties',
+          where: {
+            and: [baseWhere, { is_published: { equals: true } }],
+          },
+          limit: 0,
+        }),
+
+        req.payload.count({
+          collection: 'properties',
+          where: {
+            and: [baseWhere, { is_published: { equals: false } }],
+          },
+          limit: 0,
+        }),
+
+        // Hết hạn (expire_at < now)
+        req.payload.count({
+          collection: 'properties',
+          where: {
+            and: [
+              baseWhere,
+              { expire_at: { less_than: now } },
+            ],
+          },
+          limit: 0,
+        }),
+
+        // Đang VIP (is_vip = true và chưa hết hạn)
+        req.payload.count({
+          collection: 'properties',
+          where: {
+            and: [
+              baseWhere,
+              { is_vip: { equals: true } },
+              {
+                or: [
+                  { vip_expire_at: { greater_than_equal: now } },
+                  { vip_expire_at: { exists: false } },
+                ],
+              },
+            ],
+          },
+          limit: 0,
+        }),
+      ]);
+      return Response.json({
+        total: totalRes,
+        published: publishedRes,
+        hidden: hiddenRes,
+        expired: expiredRes,
+        vip: vipRes
+      });
+      },
+    },
   ],
 }

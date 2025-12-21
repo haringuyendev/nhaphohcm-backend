@@ -361,7 +361,6 @@ export const Properties: CollectionConfig = {
           depth: 2,
           sort: '-createdAt',
         });
-        console.log('Similar properties:', similar);
         return Response.json({ docs: similar.docs });
       },
     },
