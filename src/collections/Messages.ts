@@ -23,7 +23,7 @@ export const Messages: CollectionConfig = {
 
       if (checkRole(['admin'], user)) return true
 
-      return false
+      return true
     },
     update: adminOnly,
     delete: adminOnly,
