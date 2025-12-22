@@ -104,6 +104,12 @@ export const SocialPosts: CollectionConfig = {
       defaultValue: 0,
       admin: { readOnly: true },
     },
+    {
+      name: 'commentCount',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true },
+    }
   ],
   hooks: {
     beforeChange: [
@@ -127,4 +133,98 @@ export const SocialPosts: CollectionConfig = {
       },
     ],
   },
+  endpoints: [
+    {
+      path: '/my-feed',
+      method: 'get',
+      handler: async (req) => {
+        const user = req.user
+
+        if (!user) {
+          return Response.json({ message: 'Yêu cầu đăng nhập để xem feed' }, { status: 401 })
+        }
+
+        try {
+          // Bước 1: Lấy danh sách community mà user là thành viên active
+          const memberships = await req.payload.find({
+            collection: 'members',
+            where: {
+              user: { equals: user.id },
+              status: { equals: 'active' },
+            },
+            pagination: false,
+            depth: 1,
+          })
+
+          const communityIds = memberships.docs
+            .map((m: any) => m.community?.id || m.community)
+            .filter(Boolean)
+
+          if (communityIds.length === 0) {
+            return Response.json({
+              docs: [],
+              totalDocs: 0,
+              page: 1,
+              totalPages: 1,
+              limit: 20,
+              hasNextPage: false,
+              hasPrevPage: false,
+            })
+          }
+
+          // Bước 2: Lấy bài viết từ các community đó
+          const page = req.query.page ? parseInt(req.query.page as string, 10) : 1
+          const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20
+
+          const result = await req.payload.find({
+            collection: 'socialPosts',
+            where: {
+              community: { in: communityIds },
+              // Có thể thêm điều kiện ẩn bài viết nếu cần
+              // isHidden: { equals: false },
+            },
+            sort: '-createdAt', // mới nhất trước
+            page,
+            limit,
+            depth: 4, // populate đầy đủ: author, community, attachments.file, v.v.
+            req,
+          })
+
+          return Response.json(result)
+        } catch (error) {
+          console.error('Error in /my-feed endpoint:', error)
+          return Response.json({ message: 'Lỗi server khi tải feed' }, { status: 500 })
+        }
+      },
+    },
+    {
+      path: '/trending',
+      method: 'get',
+      handler: async (req) => {
+        try {
+          const page = req.query.page ? parseInt(req.query.page as string, 10) : 1
+          const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20
+
+          const result = await req.payload.find({
+            collection: 'socialPosts',
+            where: {
+              // Chỉ lấy bài viết chưa bị ẩn
+              isHidden: { equals: false },
+            },
+            sort: '-likeCount', // thích nhiều nhất
+            page,
+            limit,
+            depth: 4,
+            req,
+          })
+
+          return Response.json(result)
+        } catch (error) {
+          console.error('Error in /trending endpoint:', error)
+          return Response.json({ message: 'Lỗi server khi tải bài viết nổi bật' }, { status: 500 })
+        }
+      },
+    },
+    
+  ],
 }

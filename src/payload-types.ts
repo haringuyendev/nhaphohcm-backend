@@ -892,6 +892,7 @@ export interface SocialPost {
     | null;
   isHidden?: boolean | null;
   likeCount?: number | null;
+  commentCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -905,6 +906,9 @@ export interface Comment {
   author: string | User;
   text: string;
   parentComment?: (string | null) | Comment;
+  /**
+   * Ẩn bình luận (moderator/admin)
+   */
   isHidden?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -1534,6 +1538,7 @@ export interface SocialPostsSelect<T extends boolean = true> {
       };
   isHidden?: T;
   likeCount?: T;
+  commentCount?: T;
   updatedAt?: T;
   createdAt?: T;
 }
