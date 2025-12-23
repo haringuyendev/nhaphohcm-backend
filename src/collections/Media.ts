@@ -20,6 +20,13 @@ export const Media: CollectionConfig = {
   access: {
     read: () => true,
   },
+  defaultPopulate:{
+    alt:true,
+    blurhash:true,
+    filename:true,
+    mimeType:true,
+    url:true,
+  },
   fields: [
     {
       name: 'alt',

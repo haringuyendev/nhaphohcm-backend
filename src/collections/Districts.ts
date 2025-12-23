@@ -7,6 +7,11 @@ export const Districts: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['code', 'name', 'division_type', 'province'],
   },
+  defaultPopulate:{
+    name:true,
+    code:true,
+    id:true
+  },
   access: {
     read: () => true,
     create: adminOnly,

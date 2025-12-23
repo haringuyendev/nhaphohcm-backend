@@ -7,6 +7,11 @@ export const Wards: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['code', 'name', 'division_type', 'district'],
   },
+  defaultPopulate:{
+    id:true,
+    name:true,
+    code:true,
+  },
   access: {
     read: () => true,
     create: adminOnly,

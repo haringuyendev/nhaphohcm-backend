@@ -22,6 +22,13 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email', 'roles'],
     useAsTitle: 'name',
   },
+  defaultPopulate:{
+    name:true,
+    roles:true,
+    phone:true,
+    avatar:true,
+    expoPushToken:true,
+  },
   auth: {
     tokenExpiration: 1209600,
     forgotPassword: {

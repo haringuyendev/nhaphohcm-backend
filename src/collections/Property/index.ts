@@ -19,6 +19,7 @@ import {
 import { generateUniqueSlug } from './hooks/generateUniqueSlug'
 import { autoSetExpireDate } from './hooks/autoSetExprireDate'
 import { autoAssignBumpedAt } from './hooks/autoAssignBumpedAt'
+import { title } from 'process'
 
 // src/collections/Property/hooks/updateWardCount.ts
 const updateWardPropertyCount = async ({
@@ -67,10 +68,53 @@ export const Properties: CollectionConfig = {
       'is_vip',
     ],
   },
+  defaultPopulate:{
+    title:true,
+    description:true,
+    images:true,
+    type:true,
+    province:true,
+    district:true,
+    ward:true,
+    seller:true,
+    is_published:true,
+    is_vip:true,
+    featured:true,
+    address:true,
+    price:true,
+    area:true,
+    bedrooms:true,
+    bathrooms:true,
+    expire_at:true,
+    vip_expire_at:true,
+    is_hidden:true,
+    bumped_at:true,
+    slug:true,
+  },
   access: {
     read: () => true,
     create: adminOrSelf, // chỉ user đăng nhập hoặc admin mới được tạo
-    update: adminOrSelf, // chỉ chủ tin hoặc admin mới được sửa
+    update: async ({ req, id }) => {
+      const user = req.user
+      if (!user) return false
+
+      // Admin toàn quyền
+      if (user.roles?.includes('admin')) return true
+
+      // Nếu không phải admin → chỉ được sửa tin của chính mình
+      try {
+        const property = await req.payload.findByID({
+          collection: 'properties',
+          id: id as string,
+          depth: 1, // không cần populate sâu
+        })
+
+        // So sánh seller.id với user.id
+        return (property.seller as any)?.id === user.id
+      } catch (error) {
+        return false // lỗi → từ chối
+      }
+    },
     delete: adminOnly, // chỉ admin được xóa
   },
   fields: [
@@ -340,12 +384,12 @@ export const Properties: CollectionConfig = {
       path: '/similar/:id',
       method: 'get',
       handler: async (req: any) => {
-        const { id } = req.routeParams || req.params; 
-        if (!id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+        const { id } = req.routeParams || req.params
+        if (!id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
         const current = await req.payload.findByID({
           collection: 'properties',
           id,
-        });
+        })
 
         const similar = await req.payload.find({
           collection: 'properties',
@@ -360,17 +404,12 @@ export const Properties: CollectionConfig = {
           limit: 10,
           depth: 2,
           sort: '-createdAt',
-        });
-        return Response.json({ docs: similar.docs });
+        })
+        return Response.json({ docs: similar.docs })
       },
     },
   ],
   hooks: {
-    beforeChange: [
-      autoAssignSeller,
-      generateUniqueSlug,
-      autoSetExpireDate,
-      autoAssignBumpedAt,
-    ],
+    beforeChange: [autoAssignSeller, generateUniqueSlug, autoSetExpireDate, autoAssignBumpedAt],
   },
 }
