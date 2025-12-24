@@ -29,6 +29,17 @@ export const PostLikes: CollectionConfig = {
     delete: ({ req }) => !!req.user,
   },
 
+  defaultPopulate: {
+    post: {
+      id: true,
+      likeCount: true,
+      commentCount: true,
+    },
+    user: {
+      id: true,
+    },
+  },
+
   fields: [
     {
       name: 'post',
@@ -90,14 +101,17 @@ export const PostLikes: CollectionConfig = {
         }
 
         const payload = req.payload
+        const io = (payload as any).io
 
         try {
           // Kiểm tra post tồn tại (tùy chọn nhưng tốt)
-          const post = await payload.findByID({
-            collection: 'socialPosts',
-            id: postId,
-            depth: 0,
-          }).catch(() => null)
+          const post = await payload
+            .findByID({
+              collection: 'socialPosts',
+              id: postId,
+              depth: 0,
+            })
+            .catch(() => null)
 
           if (!post) {
             return Response.json({ message: 'Bài viết không tồn tại' }, { status: 404 })
@@ -133,6 +147,16 @@ export const PostLikes: CollectionConfig = {
               },
             })
             liked = true
+            if (io) {
+              io.emit('COLLECTION_CHANGED', {
+                collection: 'socialPosts',
+                operation: 'update',
+                user: user,
+                doc: post,
+              })
+            } else {
+              console.log('Skipping emit - no io for post:', postId)
+            }
           }
 
           const updatedPost = await payload.findByID({
@@ -140,15 +164,6 @@ export const PostLikes: CollectionConfig = {
             id: postId,
             depth: 0,
           })
-
-          const io = (payload as any).io
-          if (io) {
-            io.to(`post_${postId}`).emit('post:likeUpdated', {
-              postId,
-              likeCount: updatedPost.likeCount,
-              likedByUser: liked,
-            })
-          }
 
           return Response.json({
             success: true,

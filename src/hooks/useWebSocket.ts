@@ -91,11 +91,6 @@ export function useWebSocket(
     })
   }, [])
 
-  /**
-   * fetchCollection API (manual)
-   * - collection: tên collection (required)
-   * - overrides: partial config (ví dụ where, limit, sort...) sẽ merge trên template configs nếu có
-   */
   const fetchCollection = useCallback((collection: string, overrides?: Partial<CollectionConfig>) => {
     const socket = socketRef.current
     if (!socket?.connected) {
@@ -141,8 +136,6 @@ export function useWebSocket(
       setStatus('connected')
       if (user?.id) socket.emit('JOIN_USER', user.id)
 
-      // If you want automatic re-fetch of previously requested collections after reconnect:
-      // for (const c of Object.values(requestedRef.current)) socket.emit(MESSAGE_TYPES.FETCH_COLLECTION, c)
     })
 
     socket.on('disconnect', () => setStatus('disconnected'))

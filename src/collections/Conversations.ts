@@ -10,6 +10,12 @@ export const Conversations: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
   },
+  defaultPopulate:{
+    title:true,
+    isGroup:true,
+    participants:true,
+    lastMessage:true,
+  },
   access: {
     read: adminOrParticipants,
     create: adminOrParticipants,

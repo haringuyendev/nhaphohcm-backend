@@ -208,7 +208,15 @@ export const Comments: CollectionConfig = {
             },
             depth: 3, // populate author, post, etc.
           })
-
+          const payload = req.payload
+          const io = (payload as any).io
+          if (io) {
+            io.emit('COLLECTION_CHANGED', {
+              collection: 'comments',
+              operation: 'create',
+              doc: newComment,
+            })
+          }
           return Response.json({
             success: true,
             comment: newComment,
@@ -255,6 +263,8 @@ export const Comments: CollectionConfig = {
             depth: 2,
           })
 
+          
+
           if (!parentComment) {
             return Response.json({ message: 'Bình luận cha không tồn tại' }, { status: 404 })
           }
@@ -291,7 +301,15 @@ export const Comments: CollectionConfig = {
             },
             depth: 3,
           })
-
+          const payload = req.payload
+          const io = (payload as any).io
+          if (io) {
+            io.emit('COLLECTION_CHANGED', {
+              collection: 'comments',
+              operation: 'update',
+              doc: replyComment,
+            })
+          }
           return Response.json({
             success: true,
             comment: replyComment,

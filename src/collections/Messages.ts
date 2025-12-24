@@ -28,6 +28,15 @@ export const Messages: CollectionConfig = {
     update: adminOnly,
     delete: adminOnly,
   },
+  defaultPopulate:{
+    sender:true,
+    conversation:{
+      id:true,
+      participants:true,
+    },
+    isReadBy:true,
+    text:true,
+  },
   timestamps: true,
   fields: [
     {
