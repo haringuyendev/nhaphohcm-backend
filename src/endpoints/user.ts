@@ -18,7 +18,7 @@ export async function resetPasswordAction(formData: FormData) {
     await payload.resetPassword({
       collection: 'users',
       data: { token, password },
-      overrideAccess: false,
+      overrideAccess: true,
     })
 
     return { success: true, message: 'Đặt lại mật khẩu thành công!' }

@@ -68,28 +68,28 @@ export const Properties: CollectionConfig = {
       'is_vip',
     ],
   },
-  defaultPopulate:{
-    title:true,
-    description:true,
-    images:true,
-    type:true,
-    province:true,
-    district:true,
-    ward:true,
-    seller:true,
-    is_published:true,
-    is_vip:true,
-    featured:true,
-    address:true,
-    price:true,
-    area:true,
-    bedrooms:true,
-    bathrooms:true,
-    expire_at:true,
-    vip_expire_at:true,
-    is_hidden:true,
-    bumped_at:true,
-    slug:true,
+  defaultPopulate: {
+    title: true,
+    description: true,
+    images: true,
+    type: true,
+    province: true,
+    district: true,
+    ward: true,
+    seller: true,
+    is_published: true,
+    is_vip: true,
+    featured: true,
+    address: true,
+    price: true,
+    area: true,
+    bedrooms: true,
+    bathrooms: true,
+    expire_at: true,
+    vip_expire_at: true,
+    is_hidden: true,
+    bumped_at: true,
+    slug: true,
   },
   access: {
     read: () => true,
@@ -115,7 +115,27 @@ export const Properties: CollectionConfig = {
         return false // lỗi → từ chối
       }
     },
-    delete: adminOnly, // chỉ admin được xóa
+    delete: async ({ req, id }) => {
+      const user = req.user
+      if (!user) return false
+
+      // Admin toàn quyền
+      if (user.roles?.includes('admin')) return true
+
+      // Nếu không phải admin → chỉ được sửa tin của chính mình
+      try {
+        const property = await req.payload.findByID({
+          collection: 'properties',
+          id: id as string,
+          depth: 1, // không cần populate sâu
+        })
+
+        // So sánh seller.id với user.id
+        return (property.seller as any)?.id === user.id
+      } catch (error) {
+        return false // lỗi → từ chối
+      }
+    }, // chỉ admin được xóa
   },
   fields: [
     {

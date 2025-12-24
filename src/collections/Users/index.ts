@@ -60,6 +60,24 @@ export const Users: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'email',
+      type: 'email', // vẫn để type: 'email' để có UI đẹp
+      required: true,
+      unique: true,
+      // TẮT VALIDATE MẶC ĐỊNH
+      validate: async (val) => {
+        if (!val) return 'Email là bắt buộc';
+
+        // Regex đơn giản hơn, chấp nhận hầu hết email thực tế
+        const simpleEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!simpleEmailRegex.test(val)) {
+          return 'Email không hợp lệ';
+        }
+
+        return true; 
+      },
+    },
+    {
       name: 'roles',
       type: 'select',
       required: true,

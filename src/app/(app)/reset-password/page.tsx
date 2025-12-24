@@ -5,12 +5,17 @@ import React from 'react'
 import ResetPassword from '@/components/forms/ResetPasswordForm'
 
 type Args = {
-  params: Promise<{
+  searchParams: Promise<{
     token: string
   }>
 }
-export default async function ResetPasswordPage({params}: Args) {
-    const {token} = await params
+export default async function ResetPasswordPage({searchParams}: Args) {
+    const paramsData = await searchParams
+    const {token} = paramsData
+    console.log('Reset password token:', token)
+    if (!token) {
+        return <div className="container">Token không hợp lệ</div>
+    }
   return (
     <div className="container">
         <ResetPassword token={token} />
