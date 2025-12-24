@@ -32,32 +32,7 @@ export const Comments: CollectionConfig = {
   slug: 'comments',
   access: {
     read: () => true,
-    create: async ({ req, data }) => {
-      const user = req.user
-      if (!user) return false
-      if (user.roles?.includes('admin')) return true
-
-      const postId = data?.post
-      if (!postId) return false
-
-      const post = await req.payload.findByID({
-        collection: 'socialPosts',
-        id: postId,
-      })
-      if (!post) return false
-
-      const member = await req.payload.find({
-        collection: 'members',
-        where: {
-          community: { equals: post.community },
-          user: { equals: user.id },
-          status: { equals: 'active' },
-        },
-        limit: 1,
-      })
-
-      return member.totalDocs > 0
-    },
+    create: ({ req }) => !!req.user,
     update: ({ req }) => !!req.user,
     delete: ({ req }) => !!req.user && req.user.roles?.includes('admin'),
   },
@@ -180,23 +155,6 @@ export const Comments: CollectionConfig = {
             return Response.json({ message: 'Bài viết không tồn tại' }, { status: 404 })
           }
 
-          const member = await req.payload.find({
-            collection: 'members',
-            where: {
-              community: { equals: post.community },
-              user: { equals: user.id },
-              status: { equals: 'active' },
-            },
-            limit: 1,
-          })
-
-          if (member.totalDocs === 0 && !user.roles?.includes('admin')) {
-            return Response.json(
-              { message: 'Bạn không phải thành viên cộng đồng này' },
-              { status: 403 },
-            )
-          }
-
           // Tạo comment
           const newComment = await req.payload.create({
             collection: 'comments',
@@ -215,7 +173,8 @@ export const Comments: CollectionConfig = {
               collection: 'comments',
               operation: 'create',
               doc: newComment,
-            })
+            });
+            
           }
           return Response.json({
             success: true,
@@ -263,32 +222,12 @@ export const Comments: CollectionConfig = {
             depth: 2,
           })
 
-          
-
           if (!parentComment) {
             return Response.json({ message: 'Bình luận cha không tồn tại' }, { status: 404 })
           }
 
           const postId =
             typeof parentComment.post === 'object' ? parentComment.post.id : parentComment.post
-
-          // Kiểm tra quyền (giống add comment)
-          const member = await req.payload.find({
-            collection: 'members',
-            where: {
-              community: { equals: (parentComment.post as any)?.community || postId },
-              user: { equals: user.id },
-              status: { equals: 'active' },
-            },
-            limit: 1,
-          })
-
-          if (member.totalDocs === 0 && !user.roles?.includes('admin')) {
-            return Response.json(
-              { message: 'Bạn không được phép trả lời trong cộng đồng này' },
-              { status: 403 },
-            )
-          }
 
           // Tạo reply
           const replyComment = await req.payload.create({
@@ -306,7 +245,7 @@ export const Comments: CollectionConfig = {
           if (io) {
             io.emit('COLLECTION_CHANGED', {
               collection: 'comments',
-              operation: 'update',
+              operation: 'create',
               doc: replyComment,
             })
           }
@@ -351,7 +290,6 @@ export const Comments: CollectionConfig = {
             collection: 'comments',
             where: {
               post: { equals: postId },
-              // Có thể thêm: isHidden: { equals: false } nếu muốn ẩn comment bị ẩn
             },
             depth: 4, // populate sâu: author (với avatar), parentComment, post...
             sort: '-createdAt', // comment mới nhất lên đầu
@@ -359,9 +297,6 @@ export const Comments: CollectionConfig = {
             limit,
             req,
           })
-
-          // Nếu bạn muốn cấu trúc dạng cây (nested replies), có thể xử lý ở đây
-          // Nhưng với depth populate tốt + frontend xử lý thì trả phẳng là ổn và hiệu quả hơn
 
           return Response.json({
             ...result,

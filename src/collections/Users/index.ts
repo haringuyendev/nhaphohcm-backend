@@ -15,19 +15,30 @@ export const Users: CollectionConfig = {
     create: publicAccess,
     delete: adminOnly,
     read: () => true,
-    update: adminOrSelf,
+    update: ({ req: { user }, id }) => {
+    // 1. Nếu là Admin, cho phép tất cả
+    if (user?.roles?.includes('admin')) return true;
+
+    if (user && id && user.id === id) {
+      return true; 
+    }
+
+    if (user) return true;
+
+    return false;
+  },
   },
   admin: {
     group: 'Users',
     defaultColumns: ['name', 'email', 'roles'],
     useAsTitle: 'name',
   },
-  defaultPopulate:{
-    name:true,
-    roles:true,
-    phone:true,
-    avatar:true,
-    expoPushToken:true,
+  defaultPopulate: {
+    name: true,
+    roles: true,
+    phone: true,
+    avatar: true,
+    expoPushToken: true,
   },
   auth: {
     tokenExpiration: 1209600,
@@ -66,15 +77,15 @@ export const Users: CollectionConfig = {
       unique: true,
       // TẮT VALIDATE MẶC ĐỊNH
       validate: async (val) => {
-        if (!val) return 'Email là bắt buộc';
+        if (!val) return 'Email là bắt buộc'
 
         // Regex đơn giản hơn, chấp nhận hầu hết email thực tế
         const simpleEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!simpleEmailRegex.test(val)) {
-          return 'Email không hợp lệ';
+          return 'Email không hợp lệ'
         }
 
-        return true; 
+        return true
       },
     },
     {
@@ -178,7 +189,7 @@ export const Users: CollectionConfig = {
           if (!req) return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
           const user = req.user
           if (!user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
-          
+
           const { propertyId } = await req.json?.()
           if (!propertyId) return Response.json({ error: 'Missing propertyId' }, { status: 400 })
 
@@ -189,15 +200,20 @@ export const Users: CollectionConfig = {
             collection: 'users',
             id: user.id,
           })
-          const currentFavoritePropertiesID = current.favoriteProperties?.map((p: any) => p.id) || [];
-          const currentFavoriteProperties = current.favoriteProperties?.filter((p: any) => p.id !== propertyId.toString());
-          const alreadySaved = currentFavoritePropertiesID.includes(propertyId.toString());
+          const currentFavoritePropertiesID =
+            current.favoriteProperties?.map((p: any) => p.id) || []
+          const currentFavoriteProperties = current.favoriteProperties?.filter(
+            (p: any) => p.id !== propertyId.toString(),
+          )
+          const alreadySaved = currentFavoritePropertiesID.includes(propertyId.toString())
 
           const updated = await payload.update({
             collection: 'users',
             id: user.id,
             data: {
-              favoriteProperties: alreadySaved ? currentFavoriteProperties : [...(current?.favoriteProperties || []), propertyId],
+              favoriteProperties: alreadySaved
+                ? currentFavoriteProperties
+                : [...(current?.favoriteProperties || []), propertyId],
             },
           })
 
@@ -217,74 +233,71 @@ export const Users: CollectionConfig = {
       method: 'get',
       handler: async (req: any) => {
         if (!req) return Response.json({ error: 'Lỗi hệ thống' }, { status: 500 })
-          const user = req.user
-          if (!user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
-        const now = new Date().toISOString();
+        const user = req.user
+        if (!user?.id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        const now = new Date().toISOString()
 
-      const baseWhere = { seller: { equals: user.id } };
+        const baseWhere = { seller: { equals: user.id } }
 
-      const [totalRes, publishedRes, hiddenRes, expiredRes, vipRes] = await Promise.all([
-        // Tổng tất cả tin của user
-        req.payload.count({
-          collection: 'properties',
-          where: baseWhere,
-          limit: 0,
-        }),
+        const [totalRes, publishedRes, hiddenRes, expiredRes, vipRes] = await Promise.all([
+          // Tổng tất cả tin của user
+          req.payload.count({
+            collection: 'properties',
+            where: baseWhere,
+            limit: 0,
+          }),
 
-        // Đang published
-        req.payload.count({
-          collection: 'properties',
-          where: {
-            and: [baseWhere, { is_published: { equals: true } }],
-          },
-          limit: 0,
-        }),
+          // Đang published
+          req.payload.count({
+            collection: 'properties',
+            where: {
+              and: [baseWhere, { is_published: { equals: true } }],
+            },
+            limit: 0,
+          }),
 
-        req.payload.count({
-          collection: 'properties',
-          where: {
-            and: [baseWhere, { is_published: { equals: false } }],
-          },
-          limit: 0,
-        }),
+          req.payload.count({
+            collection: 'properties',
+            where: {
+              and: [baseWhere, { is_published: { equals: false } }],
+            },
+            limit: 0,
+          }),
 
-        // Hết hạn (expire_at < now)
-        req.payload.count({
-          collection: 'properties',
-          where: {
-            and: [
-              baseWhere,
-              { expire_at: { less_than: now } },
-            ],
-          },
-          limit: 0,
-        }),
+          // Hết hạn (expire_at < now)
+          req.payload.count({
+            collection: 'properties',
+            where: {
+              and: [baseWhere, { expire_at: { less_than: now } }],
+            },
+            limit: 0,
+          }),
 
-        // Đang VIP (is_vip = true và chưa hết hạn)
-        req.payload.count({
-          collection: 'properties',
-          where: {
-            and: [
-              baseWhere,
-              { is_vip: { equals: true } },
-              {
-                or: [
-                  { vip_expire_at: { greater_than_equal: now } },
-                  { vip_expire_at: { exists: false } },
-                ],
-              },
-            ],
-          },
-          limit: 0,
-        }),
-      ]);
-      return Response.json({
-        total: totalRes,
-        published: publishedRes,
-        hidden: hiddenRes,
-        expired: expiredRes,
-        vip: vipRes
-      });
+          // Đang VIP (is_vip = true và chưa hết hạn)
+          req.payload.count({
+            collection: 'properties',
+            where: {
+              and: [
+                baseWhere,
+                { is_vip: { equals: true } },
+                {
+                  or: [
+                    { vip_expire_at: { greater_than_equal: now } },
+                    { vip_expire_at: { exists: false } },
+                  ],
+                },
+              ],
+            },
+            limit: 0,
+          }),
+        ])
+        return Response.json({
+          total: totalRes,
+          published: publishedRes,
+          hidden: hiddenRes,
+          expired: expiredRes,
+          vip: vipRes,
+        })
       },
     },
   ],

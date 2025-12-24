@@ -9,14 +9,14 @@ import { checkRole } from '@/access/utilities'
  */
 export const adminOrSelf: Access = ({ req: { user } }) => {
   if (user) {
+    console.log('User:', user);
     if (checkRole(['admin'], user)) {
       return true
     }
-
     return {
       id: {
         equals: user.id,
-      },
+      }
     }
   }
 
