@@ -9,55 +9,14 @@ export const SocialPosts: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: async ({ req, data }) => {
-      const user = req.user
-      if (!user) return false
-      if (user.roles?.includes('admin')) return true
-
-      // data chính là body đã được parse đúng cách, luôn là object
-      const communityId = data?.community
-
-      if (!communityId) return false
-
-      const member = await req.payload.find({
-        collection: 'members',
-        where: {
-          community: { equals: communityId },
-          user: { equals: user.id },
-          status: { equals: 'active' },
-        },
-        limit: 1,
-      })
-
-      return member.totalDocs > 0
-    },
+    create: async ({ req }) => !!req.user,
     update: async ({ req, id }) => {
-      // Chỉ author, mod, admin của cộng đồng hoặc admin toàn hệ thống
       const user = req.user
       if (!user || !id) return false
       if (user.roles?.includes('admin')) return true
-
-      const post = await req.payload.findByID({
-        collection: 'socialPosts',
-        id: id as string,
-      })
-
-      if ((post.author as any)?.id === user.id) return true
-
-      // kiểm tra có phải mod/admin của cộng đồng không
-      const member = await req.payload.find({
-        collection: 'members',
-        where: {
-          community: { equals: post.community },
-          user: { equals: user.id },
-          role: { in: ['moderator', 'admin'] },
-        },
-        limit: 1,
-      })
-
-      return member.totalDocs > 0
+      return false
     },
-    delete: ({ req }) => {
+    delete: async ({ req }) => {
       const user = req.user
       return !!user && user.roles?.includes('admin')
     },
@@ -69,7 +28,7 @@ export const SocialPosts: CollectionConfig = {
       name: 'community',
       type: 'relationship',
       relationTo: 'communities',
-      required: true,
+      required: false,
       index: true,
     },
     {
@@ -109,7 +68,7 @@ export const SocialPosts: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: { readOnly: true },
-    }
+    },
   ],
   hooks: {
     beforeChange: [
@@ -121,12 +80,23 @@ export const SocialPosts: CollectionConfig = {
       },
     ],
     afterChange: [
-      async ({ doc, req, operation }) => {
+      async ({ doc, req }) => {
         const io = (req.payload as any).io
+        const ownerId = typeof doc.author === 'object' ? doc.author.id : doc.author
+
+        if (ownerId) {
+          // Emit riêng cho owner (dùng room user_{ownerId})
+          io.to(`user_${ownerId}`).emit('post:liked', {
+            postId: doc.id,
+            likeCount: doc.likeCount,
+            likerName: req.user?.name || 'Ai đó', // nếu có user thực hiện like
+          })
+        }
         if (io) {
-          io.to(`community_${doc.community}`).emit('post:changed', {
-            operation: operation || 'update',
-            post: doc,
+          io.emit('COLLECTION_CHANGED', {
+            collection: 'socialPosts',
+            operation: 'update',
+            doc: doc, // ← có commentCount mới nhất
           })
         }
         return doc
@@ -225,6 +195,5 @@ export const SocialPosts: CollectionConfig = {
         }
       },
     },
-    
   ],
 }

@@ -882,7 +882,7 @@ export interface SocialPost {
     };
     [k: string]: unknown;
   } | null;
-  community: string | Community;
+  community?: (string | null) | Community;
   author: string | User;
   attachments?:
     | {

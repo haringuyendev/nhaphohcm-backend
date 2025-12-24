@@ -100,12 +100,9 @@ export const PostLikes: CollectionConfig = {
           return Response.json({ message: 'Thiếu hoặc sai post ID' }, { status: 400 })
         }
 
-        const payload = req.payload
-        const io = (payload as any).io
-
         try {
           // Kiểm tra post tồn tại (tùy chọn nhưng tốt)
-          const post = await payload
+          const post = await req.payload
             .findByID({
               collection: 'socialPosts',
               id: postId,
@@ -118,7 +115,7 @@ export const PostLikes: CollectionConfig = {
           }
 
           // Tìm like hiện tại
-          const existing = await payload.find({
+          const existing = await req.payload.find({
             collection: 'postLikes',
             where: {
               post: { equals: postId },
@@ -132,14 +129,14 @@ export const PostLikes: CollectionConfig = {
 
           if (hasLiked) {
             // Unlike
-            await payload.delete({
+            await req.payload.delete({
               collection: 'postLikes',
               id: existing.docs[0].id,
             })
             liked = false
           } else {
             // Like
-            await payload.create({
+            await req.payload.create({
               collection: 'postLikes',
               data: {
                 post: postId,
@@ -147,19 +144,9 @@ export const PostLikes: CollectionConfig = {
               },
             })
             liked = true
-            if (io) {
-              io.emit('COLLECTION_CHANGED', {
-                collection: 'socialPosts',
-                operation: 'update',
-                user: user,
-                doc: post,
-              })
-            } else {
-              console.log('Skipping emit - no io for post:', postId)
-            }
           }
 
-          const updatedPost = await payload.findByID({
+          const updatedPost = await req.payload.findByID({
             collection: 'socialPosts',
             id: postId,
             depth: 0,

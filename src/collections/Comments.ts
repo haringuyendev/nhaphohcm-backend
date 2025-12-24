@@ -82,14 +82,40 @@ export const Comments: CollectionConfig = {
     // === THÊM: Đồng bộ commentCount ===
     afterChange: [
       async ({ doc, req, operation }) => {
-        // Cập nhật count khi tạo hoặc update (nếu có thay đổi isHidden)
-        await syncCommentCount(req.payload, doc.post)
+        const payload = req.payload
+        const io = (payload as any).io
 
-        // Real-time emit (giữ nguyên)
-        const io = (req.payload as any).io
+        // 1. Đồng bộ commentCount cho bài viết
+        if (doc.post) {
+          await syncCommentCount(payload, doc.post)
+        }
+
+        // 2. Emit realtime event COLLECTION_CHANGED (chuẩn Payload)
         if (io && doc.post) {
           const postId = typeof doc.post === 'object' ? doc.post.id : doc.post
-          io.to(`post_${postId}`).emit('comment:changed', doc)
+          // Lấy owner của bài viết
+          const post = await payload.findByID({
+            collection: 'socialPosts',
+            id: postId,
+            depth: 1,
+          })
+          const ownerId = typeof post.author === 'object' ? post.author.id : post.author
+
+          if (ownerId && req.user?.id !== ownerId) {
+            // không toast nếu tự comment
+            io.to(`user_${ownerId}`).emit('post:commented', {
+              postId,
+              commentCount: post.commentCount ? post.commentCount + 1 : 1,
+              commenterName: req.user?.name || 'Ai đó',
+              commentText: doc.text,
+            })
+          }
+          // Emit event chuẩn để client xử lý realtime
+          io.emit('COLLECTION_CHANGED', {
+            collection: 'comments',
+            operation, // 'create' | 'update' | 'delete'
+            doc,
+          })
         }
 
         return doc
@@ -98,13 +124,23 @@ export const Comments: CollectionConfig = {
 
     afterDelete: [
       async ({ doc, req }) => {
-        // Cập nhật count khi xóa comment
-        await syncCommentCount(req.payload, doc.post)
+        const payload = req.payload
 
-        // Optional: emit event xóa comment
-        const io = (req.payload as any).io
+        // Đồng bộ lại commentCount
+        if (doc.post) {
+          await syncCommentCount(payload, doc.post)
+        }
+
+        // Emit delete event nếu cần
+        const io = (payload as any).io
         if (io && doc.post) {
           const postId = typeof doc.post === 'object' ? doc.post.id : doc.post
+          io.emit('COLLECTION_CHANGED', {
+            collection: 'comments',
+            operation: 'delete',
+            doc: { id: doc.id },
+          })
+
           io.to(`post_${postId}`).emit('comment:deleted', { commentId: doc.id })
         }
 
@@ -166,16 +202,6 @@ export const Comments: CollectionConfig = {
             },
             depth: 3, // populate author, post, etc.
           })
-          const payload = req.payload
-          const io = (payload as any).io
-          if (io) {
-            io.emit('COLLECTION_CHANGED', {
-              collection: 'comments',
-              operation: 'create',
-              doc: newComment,
-            });
-            
-          }
           return Response.json({
             success: true,
             comment: newComment,
@@ -240,15 +266,6 @@ export const Comments: CollectionConfig = {
             },
             depth: 3,
           })
-          const payload = req.payload
-          const io = (payload as any).io
-          if (io) {
-            io.emit('COLLECTION_CHANGED', {
-              collection: 'comments',
-              operation: 'create',
-              doc: replyComment,
-            })
-          }
           return Response.json({
             success: true,
             comment: replyComment,
